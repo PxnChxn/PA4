@@ -89,6 +89,8 @@ def get_stopwords():
    english_stopwords = set(stopwords.words('english'))
    thai_stopwords = set(pythainlp.corpus.thai_stopwords())
    stopwords_combined = english_stopwords.union(thai_stopwords)
+   stopwords_combined.add(' ')
+   stopwords_combined.add('\n')
    
    return stopwords_combined
 
