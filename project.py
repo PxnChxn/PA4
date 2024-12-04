@@ -21,6 +21,46 @@ nltk.download("punkt")
 
 nlp = spacy.load("en_core_web_sm")
 
+def find_song_and_artist_from_openai(text):
+    openai.api_key = st.session_state.api_key
+
+    lines = text.splitlines()
+    recommended_songs = []
+
+    for line in lines:
+        if line.strip():
+            response = openai.ChatCompletion.create(
+                model="gpt-4o-mini-2024-07-18",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            f"You are a professional song lover and listener who could find songs from lyrics efficiently, and you are also know every artists."
+                            f"Find what songs these lyrics come from by comparing the lyrics to the songs you know. "
+                            f"Find the name of the song and the artist. "
+                            f"You could also recommend other 3 from the same artist to recommend users. "
+                            f"Recommended songs might be that artists' popular songs or maybe the songs from that artists that share a lot of same word with the lyrics that users input"
+                        )
+                    },
+                    {"role": "user", "content": line}
+                ],
+                max_tokens=3000
+            )
+            response_content = response['choices'][0]['message']['content'].strip()
+            
+            parts = response_content.split(", ")
+            
+            if len(parts) > 0:
+                song_info = parts[0].split(" - ")
+                if len(song_info) == 2:
+                    song_name = song_info[0].strip()
+                    song_artist = song_info[1].strip() 
+
+            if len(parts) > 1:
+                recommended_songs.extend(parts[1:])
+
+    return f"song name: {song_name}", f"song artist: {song_artist}", recommended_songs
+
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
     openai.api_key = st.session_state.api_key
@@ -130,41 +170,6 @@ def most_common(input_text):
 
     return excel_buffer, word_counts_df, filtered_words
 
-def generate_word_cloud(input_text):
-    
-    detected_language = detect(input_text)
-
-    stopwords_combined = get_stopwords()
-    if detected_language == 'th':
-        words = pythainlp.tokenize.word_tokenize(input_text)
-    else:
-        doc = nlp(input_text)
-        words = [token.text for token in doc if not token.is_punct]
-        
-    filtered_words = [word for word in words if word.lower() not in stopwords_combined]
-
-    if detected_language == 'th':
-        wordcloud = WordCloud(
-            font_path=".streamlit/Sarabun/Sarabun-Medium.ttf", 
-            width=800,
-            height=400,
-            background_color='white',
-            max_words=20
-        ).generate(" ".join(filtered_words)) 
-    else:
-        wordcloud = WordCloud(
-            font_path=None, 
-            width=800,
-            height=400,
-            background_color='white',
-            max_words=20
-        ).generate(" ".join(filtered_words))   
-         
-    img = BytesIO()
-    wordcloud.to_image().save(img, format='PNG')
-    img.seek(0)
-    return img
-
 # Layout
 st.set_page_config(page_title="Lyrics Translator 🎤", page_icon=".streamlit/favicon.ico", layout="wide")
 
@@ -197,40 +202,83 @@ with st.container():
    # Translate to English
    with col2:
        if st.button("Translate to ENG"):
-           target_language = "English"
-           if input_text and 'api_key' in st.session_state:
+            target_language = "English"
+            if input_text and 'api_key' in st.session_state:
+               song_name, song_artist, recommended_songs = find_song_and_artist_from_openai(input_text)
+
+            # Display Song Name and Artist centered
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.write(f"Song Name : {song_name}")
+                st.write(f"by : {song_artist}")
+
+            # Display recommended songs in 3 columns
+            if recommended_songs:
+                st.subheader("Recommended Songs:")
+
+                # Create 3 columns for recommended songs
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    if len(recommended_songs) > 0:
+                        st.text_area(recommended_songs[0], height=100)
+                with col2:
+                    if len(recommended_songs) > 1:
+                        st.text_area(recommended_songs[1], height=100)
+                with col3:
+                    if len(recommended_songs) > 2:
+                        st.text_area(recommended_songs[2], height=100)
+                        
                # Translate the text
-               translated_text = translate_text_with_openai(input_text, target_language)
+                translated_text = translate_text_with_openai(input_text, target_language)
                
                # Generate analyses
-               summary = generate_summary(translated_text)
-               most_common_result = most_common(input_text)
-               word_cloud_image = generate_word_cloud(input_text)
+                summary = generate_summary(translated_text)
+                most_common_result = most_common(input_text)
                
-               # Store results in session state
-               st.session_state.translated_text = translated_text
-               st.session_state.summary = summary
-               st.session_state.most_common = most_common_result
-               st.session_state.word_cloud_image = word_cloud_image
+                # Store results in session state
+                st.session_state.translated_text = translated_text
+                st.session_state.summary = summary
+                st.session_state.most_common = most_common_result
                
    # Translate to Thai
    with col3:
        if st.button("Translate to THA"):
-           target_language = "Thai"
-           if input_text and 'api_key' in st.session_state:
+            target_language = "Thai"
+            if input_text and 'api_key' in st.session_state:
+               song_name, song_artist, recommended_songs = find_song_and_artist_from_openai(input_text)
+
+            # Display Song Name and Artist centered
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.write(f"Song Name : {song_name}")
+                st.write(f"by : {song_artist}")
+
+            # Display recommended songs in 3 columns
+            if recommended_songs:
+                st.subheader("Recommended Songs:")
+
+                # Create 3 columns for recommended songs
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    if len(recommended_songs) > 0:
+                        st.text_area(recommended_songs[0], height=100)
+                with col2:
+                    if len(recommended_songs) > 1:
+                        st.text_area(recommended_songs[1], height=100)
+                with col3:
+                    if len(recommended_songs) > 2:
+                        st.text_area(recommended_songs[2], height=100)
                # Translate the text
-               translated_text = translate_text_with_openai(input_text, target_language)
+                translated_text = translate_text_with_openai(input_text, target_language)
                
                # Generate analyses
-               summary = generate_summary(translated_text)
-               most_common_result = most_common(input_text)
-               word_cloud_image = generate_word_cloud(input_text)
+                summary = generate_summary(translated_text)
+                most_common_result = most_common(input_text)
                
                # Store results in session state
-               st.session_state.translated_text = translated_text
-               st.session_state.summary = summary
-               st.session_state.most_common = most_common_result
-               st.session_state.word_cloud_image = word_cloud_image
+                st.session_state.translated_text = translated_text
+                st.session_state.summary = summary
+                st.session_state.most_common = most_common_result
                
 if 'api_key' not in st.session_state:
    st.warning("Please enter your OpenAI API key in the sidebar.")
@@ -278,10 +326,6 @@ if translated_text:
         )
 
         st.markdown("</div>", unsafe_allow_html=True)
-
-    # Render the word cloud
-   st.subheader("Word Cloud:")
-   st.image(word_cloud_image)
 
     # Additional button container styling
    st.markdown("""
