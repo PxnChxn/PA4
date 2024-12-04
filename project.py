@@ -234,28 +234,55 @@ with st.container():
                     st.write(recommended_songs[2])
 
         # Translate the text
-        translated_text = translate_text_with_openai(input_text, target_language)
-        st.subheader(f"Translated Text to {target_language}:")
-        st.text_area("Translated Text", value=translated_text, height=250)
+        translated_text_with_br = translated_text.replace("\n", "<br>")
+        st.subheader("Translated Text:")
+        st.markdown(f"""
+        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+                <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
+        </div>
+        """, unsafe_allow_html=True)   
+        
+        st.subheader("Summary:")
+        st.markdown("""
+        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+            <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
 
-        # Generate summary
-        summary = generate_summary(translated_text)
-        st.subheader("Summary of Lyrics:")
-        st.write(summary)
+        st.subheader("Top 10 words:")
+        excel_buffer, word_counts_df,_ = most_common(input_text)
+        st.dataframe(word_counts_df, use_container_width=True)
+        
+        if excel_buffer:
+                st.markdown("""
+                <style>
+                    .button-container {{
+                        display: flex;
+                        justify-content: center;
+                        margin-top: 20px;
+                    }}
+                </style>
+                <div class="button-container">
+                """, unsafe_allow_html=True)
+                
+                st.download_button(
+                    label="See all word frequency",
+                    data=excel_buffer,
+                    file_name="word_frequency.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    key="word_frequency_download"
+                )
 
-        # Word frequency analysis
-        excel_buffer, word_counts_df, filtered_words = most_common(input_text)
-        st.subheader("Word Frequency (Top 10 words):")
-        st.dataframe(word_counts_df)
-
-        # Option to download word frequency Excel
-        st.download_button(
-            label="Download Word Frequency Excel",
-            data=excel_buffer,
-            file_name="word_frequency.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+                st.markdown("""
+                <style>
+                    .button-container {
+                        display: flex;
+                        justify-content: center;
+                        margin-top: 20px;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
+                
    # Translate to Thai
    with col3:
         if st.button("Translate to THA"):
@@ -288,24 +315,51 @@ with st.container():
                     st.write(recommended_songs[2])
 
         # Translate the text
-        translated_text = translate_text_with_openai(input_text, target_language)
-        st.subheader(f"Translated Text to {target_language}:")
-        st.text_area("Translated Text", value=translated_text, height=250)
+        translated_text_with_br = translated_text.replace("\n", "<br>")
+        st.subheader("Translated Text:")
+        st.markdown(f"""
+        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+                <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
+        </div>
+        """, unsafe_allow_html=True)   
+        
+        st.subheader("Summary:")
+        st.markdown("""
+        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+            <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
 
-        # Generate summary
-        summary = generate_summary(translated_text)
-        st.subheader("Summary of Lyrics:")
-        st.write(summary)
+        st.subheader("Top 10 words:")
+        excel_buffer, word_counts_df,_ = most_common(input_text)
+        st.dataframe(word_counts_df, use_container_width=True)
+        
+        if excel_buffer:
+                st.markdown("""
+                <style>
+                    .button-container {{
+                        display: flex;
+                        justify-content: center;
+                        margin-top: 20px;
+                    }}
+                </style>
+                <div class="button-container">
+                """, unsafe_allow_html=True)
+                
+                st.download_button(
+                    label="See all word frequency",
+                    data=excel_buffer,
+                    file_name="word_frequency.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    key="word_frequency_download"
+                )
 
-        # Word frequency analysis
-        excel_buffer, word_counts_df, filtered_words = most_common(input_text)
-        st.subheader("Word Frequency (Top 10 words):")
-        st.dataframe(word_counts_df)
-
-        # Option to download word frequency Excel
-        st.download_button(
-            label="Download Word Frequency Excel",
-            data=excel_buffer,
-            file_name="word_frequency.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+                st.markdown("""
+                <style>
+                    .button-container {
+                        display: flex;
+                        justify-content: center;
+                        margin-top: 20px;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
