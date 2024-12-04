@@ -10,4 +10,5 @@ wordcloud
 matplotlib
 langdetect
 textblob
-fasttext
+transformers
+torch
