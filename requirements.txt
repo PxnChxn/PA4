@@ -9,4 +9,3 @@ openpyxl
 wordcloud
 matplotlib
 langdetect
-en-core-web-sm
