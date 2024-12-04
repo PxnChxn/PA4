@@ -194,13 +194,13 @@ with st.container():
                
                # Generate analyses
                summary = generate_summary(translated_text)
-               sentiment = analyze_sentiment(input_text)
+               sentiment_result, sentiment_score = analyze_sentiment(input_text)
                most_common_result = most_common(input_text)
                
                # Store results in session state
                st.session_state.translated_text = translated_text
-               st.session_state.summary = summary
-               st.session_state.sentiment = sentiment
+               st.session_state.sentiment = sentiment_result
+               st.session_state.sentiment_score = sentiment_score
                st.session_state.most_common = most_common_result
                
    # Translate to Thai
@@ -213,13 +213,13 @@ with st.container():
                
                # Generate analyses
                summary = generate_summary(translated_text)
-               sentiment = analyze_sentiment(input_text)
+               sentiment_result, sentiment_score = analyze_sentiment(input_text)
                most_common_result = most_common(input_text)
                
                # Store results in session state
                st.session_state.translated_text = translated_text
-               st.session_state.summary = summary
-               st.session_state.sentiment = sentiment
+               st.session_state.sentiment = sentiment_result
+               st.session_state.sentiment_score = sentiment_score
                st.session_state.most_common = most_common_result
                
 if 'api_key' not in st.session_state:
@@ -243,9 +243,11 @@ if translated_text:
    <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
       <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
 
+# Sentiment analysis results
    sentiment_result, score = analyze_sentiment(input_text)
    st.subheader(f"Sentiment: {sentiment_result}")
    st.subheader(f"Score: {score:.2f}")
+    
    st.slider(
         "Sentiment Score", 
         min_value=-1.0, 
@@ -255,7 +257,7 @@ if translated_text:
         key="sentiment_slider", 
         help="Sentiment score ranging from -1 (Negative) to 1 (Positive)"
     )
-
+   
    st.subheader("Top 10 words:")
    excel_buffer, word_counts_df,_ = most_common(input_text)
    st.dataframe(word_counts_df, use_container_width=True)
