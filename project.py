@@ -278,7 +278,7 @@ st.write("You can ask anything, and the chatbot will respond. Keep asking until 
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
 user_input = st.text_input("Ask me anything:")
-    if user_input:
+if user_input:
         bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
             
         st.session_state.conversation_history = updated_history
