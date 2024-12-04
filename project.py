@@ -132,19 +132,28 @@ def most_common(input_text):
     return excel_buffer, word_counts_df, filtered_words
 
 def chatbot_response(user_input, conversation_history):
+    # Append user input to the conversation history
     conversation_history.append(f"User: {user_input}")
-    prompt = "\n".join(conversation_history) + "\nChatbot:"
     
-    response = openai.Completion.create(
-        model="gpt-4", 
-        prompt=prompt,
+    # Define the prompt for the chatbot to discuss the song's lyrics
+    prompt = "\n".join(conversation_history) + "\nChatbot (about song lyrics):"
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini-2024-07-18", 
+        messages=[
+            {"role": "system", "content": 
+                "You are a helpful chatbot that specializes in discussing song lyrics. "
+                "Your task is to engage in conversations based on the lyrics that the user provides, "
+                "giving meaningful and relevant responses while focusing on the themes, emotions, and messages within the lyrics."},
+            {"role": "user", "content": user_input}
+        ],
         max_tokens=350,
         n=1, 
         stop=None, 
         temperature=0.7  
     )
     
-    bot_reply = response['choices'][0]['text'].strip()
+    bot_reply = response['choices'][0]['message']['content'].strip()
     conversation_history.append(f"Chatbot: {bot_reply}")
     
     return bot_reply, conversation_history
