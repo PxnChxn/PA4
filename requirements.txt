@@ -10,3 +10,4 @@ wordcloud
 matplotlib
 langdetect
 textblob
+fasttext
