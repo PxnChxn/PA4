@@ -131,6 +131,24 @@ def most_common(input_text):
 
     return excel_buffer, word_counts_df, filtered_words
 
+def chatbot_response(user_input, conversation_history):
+    conversation_history.append(f"User: {user_input}")
+    prompt = "\n".join(conversation_history) + "\nChatbot:"
+    
+    response = openai.Completion.create(
+        model="gpt-4", 
+        prompt=prompt,
+        max_tokens=350,
+        n=1, 
+        stop=None, 
+        temperature=0.7  
+    )
+    
+    bot_reply = response['choices'][0]['text'].strip()
+    conversation_history.append(f"Chatbot: {bot_reply}")
+    
+    return bot_reply, conversation_history
+
 # Layout
 st.set_page_config(page_title="Lyrics Translator 🎤", page_icon=".streamlit/favicon.ico", layout="wide")
 
@@ -244,6 +262,21 @@ if translated_text:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
+        st.title("Chatbot with Ongoing Conversation")
+        st.write("You can ask anything, and the chatbot will respond. Keep asking until you're satisfied.")
+        if 'conversation_history' not in st.session_state:
+            st.session_state.conversation_history = []
+    
+        user_input = st.text_input("Ask me anything:")
+    
+        if user_input:
+            bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
+            
+            st.session_state.conversation_history = updated_history
+            
+            st.write("\n".join(st.session_state.conversation_history))
+
+
    # Additional button container styling
    st.markdown("""
     <style>
@@ -254,3 +287,4 @@ if translated_text:
         }
     </style>
     """, unsafe_allow_html=True)
+    
