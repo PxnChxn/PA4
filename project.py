@@ -9,8 +9,6 @@ import pythainlp
 from pythainlp.tokenize import word_tokenize as thai_tokenize
 import pandas as pd
 import openpyxl
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
 import io
 from io import BytesIO
 from langdetect import detect
@@ -23,9 +21,11 @@ nlp = spacy.load("en_core_web_sm")
 
 def find_song_and_artist_from_openai(text):
     openai.api_key = st.session_state.api_key
-
     lines = text.splitlines()
     recommended_songs = []
+
+    song_name = "Unknown Song"
+    song_artist = "Unknown Artist"
 
     for line in lines:
         if line.strip():
@@ -54,12 +54,12 @@ def find_song_and_artist_from_openai(text):
                 song_info = parts[0].split(" - ")
                 if len(song_info) == 2:
                     song_name = song_info[0].strip()
-                    song_artist = song_info[1].strip() 
+                    song_artist = song_info[1].strip()
 
             if len(parts) > 1:
                 recommended_songs.extend(parts[1:])
 
-    return f"song name: {song_name}", f"song artist: {song_artist}", recommended_songs
+    return song_name, song_artist, recommended_songs
 
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
