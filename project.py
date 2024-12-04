@@ -262,20 +262,6 @@ if translated_text:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-   st.title("Chatbot with Ongoing Conversation")
-   st.write("You can ask anything, and the chatbot will respond. Keep asking until you're satisfied.")
-   if 'conversation_history' not in st.session_state:
-        st.session_state.conversation_history = []
-    
-   user_input = st.text_input("Ask me anything:")
-    
-   if user_input:
-        bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
-            
-        st.session_state.conversation_history = updated_history
-        st.write("\n".join(st.session_state.conversation_history))
-
-
    # Additional button container styling
    st.markdown("""
     <style>
@@ -286,4 +272,15 @@ if translated_text:
         }
     </style>
     """, unsafe_allow_html=True)
+
+st.title("Chatbot with Ongoing Conversation")
+st.write("You can ask anything, and the chatbot will respond. Keep asking until you're satisfied.")
+if 'conversation_history' not in st.session_state:
+    st.session_state.conversation_history = []
+user_input = st.text_input("Ask me anything:")
+    if user_input:
+        bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
+            
+        st.session_state.conversation_history = updated_history
+        st.write("\n".join(st.session_state.conversation_history))
     
