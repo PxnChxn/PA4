@@ -14,7 +14,7 @@ from io import BytesIO
 from langdetect import detect
 import spacy
 from textblob import TextBlob
-from pythainlp.sentiment import sentiment
+import fasttext
 
 nltk.download("stopwords")
 nltk.download("punkt")
@@ -87,15 +87,18 @@ def generate_summary(translate_result):
 
 def analyze_sentiment(input_text):
     detected_language = detect(input_text)
-
-    if detected_language == 'th':  
-        score = sentiment(input_text)
-        if score > 0:
+    
+    if detected_language == 'th':
+        sentiment = model.predict(input_text)[0][0]
+        if sentiment == '__label__positive':
             sentiment_result = "Positive"
-        elif score < 0:
+            score = 1
+        elif sentiment == '__label__negative':
             sentiment_result = "Negative"
+            score = -1
         else:
             sentiment_result = "Neutral"
+            score = 0
     else: 
         blob = TextBlob(input_text)
         score = blob.sentiment.polarity
@@ -248,6 +251,15 @@ if translated_text:
    sentiment_result, sentiment_score = analyze_sentiment(input_text)
    st.subheader(f"Sentiment: {sentiment_result}")
    st.subheader(f"Score: {sentiment_score:.2f}")
+   st.slider(
+        "Sentiment Score", 
+        min_value=-1.0, 
+        max_value=1.0, 
+        value=sentiment_score, 
+        step=0.01, 
+        key="sentiment_slider", 
+        help="Sentiment score ranging from -1 (Negative) to 1 (Positive)"
+    )
 
    # Display the top 10 words table
    st.subheader("Top 10 words:")
