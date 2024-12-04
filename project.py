@@ -16,6 +16,9 @@ from io import BytesIO
 from langdetect import detect
 import spacy
 
+nltk.download("stopwords")
+nltk.download("punkt")
+
 nlp = spacy.load("en_core_web_sm")
 
 # Function to call OpenAI API for translation
