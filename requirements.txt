@@ -1,7 +1,6 @@
 streamlit
 openai==0.28
 git+https://github.com/PyThaiNLP/pythainlp.git
-git+https://github.com/PyThaiNLP/pythainlp.git#egg=pythainlp
 git+https://github.com/nltk/nltk.git
 spacy
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0.tar.gz
