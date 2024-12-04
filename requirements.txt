@@ -10,5 +10,5 @@ wordcloud
 matplotlib
 langdetect
 textblob
-transformers
+git+https://github.com/huggingface/transformers.git
 torch
