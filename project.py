@@ -248,15 +248,6 @@ if translated_text:
    sentiment_result, sentiment_score = analyze_sentiment(input_text)
    st.subheader(f"Sentiment: {sentiment_result}")
    st.subheader(f"Score: {sentiment_score:.2f}")
-   st.slider(
-        "Sentiment Score", 
-        min_value=-1.0, 
-        max_value=1.0, 
-        value=sentiment_score, 
-        step=0.01, 
-        key="sentiment_slider", 
-        help="Sentiment score ranging from -1 (Negative) to 1 (Positive)"
-    )
 
    # Display the top 10 words table
    st.subheader("Top 10 words:")
