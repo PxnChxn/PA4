@@ -20,6 +20,7 @@ nltk.download("stopwords")
 nltk.download("punkt")
 
 nlp = spacy.load("en_core_web_sm")
+model = fasttext.load_model('cc.th.300.bin')
 
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
