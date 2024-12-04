@@ -1,0 +1,11 @@
+streamlit
+openai
+pythainlp
+nltk
+spacy
+pandas
+openpyxl
+wordcloud
+matplotlib
+langdetect
+en-core-web-sm
