@@ -88,8 +88,7 @@ def generate_summary(translate_result):
 def analyze_sentiment(input_text):
     detected_language = detect(input_text)
 
-    if detected_language == 'th':  # ถ้าเป็นภาษาไทย
-        # ใช้ pythainlp สำหรับการวิเคราะห์ความรู้สึก
+    if detected_language == 'th':  
         score = sentiment(input_text)
         if score > 0:
             sentiment_result = "Positive"
@@ -97,8 +96,7 @@ def analyze_sentiment(input_text):
             sentiment_result = "Negative"
         else:
             sentiment_result = "Neutral"
-    else:  # ถ้าเป็นภาษาอังกฤษ
-        # ใช้ TextBlob สำหรับการวิเคราะห์ความรู้สึก
+    else: 
         blob = TextBlob(input_text)
         score = blob.sentiment.polarity
         if score > 0:
@@ -236,32 +234,36 @@ if translated_text:
    <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
         <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
    </div>
-   """, unsafe_allow_html=True)   
+   """, unsafe_allow_html=True)
    
+   # Display summary
    st.subheader("Summary:")
-   st.markdown("""
+   st.markdown(f"""
    <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-      <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
+      <p style='font-size: 16px; color: #444;'>{summary}</p>
+   </div>
+   """, unsafe_allow_html=True)
 
-# Sentiment analysis results
-   sentiment_result, score = analyze_sentiment(input_text)
+   # Sentiment Result and Score
+   sentiment_result, sentiment_score = analyze_sentiment(input_text)
    st.subheader(f"Sentiment: {sentiment_result}")
-   st.subheader(f"Score: {score:.2f}")
-    
+   st.subheader(f"Score: {sentiment_score:.2f}")
    st.slider(
         "Sentiment Score", 
         min_value=-1.0, 
         max_value=1.0, 
-        value=score, 
+        value=sentiment_score, 
         step=0.01, 
         key="sentiment_slider", 
         help="Sentiment score ranging from -1 (Negative) to 1 (Positive)"
     )
-   
+
+   # Display the top 10 words table
    st.subheader("Top 10 words:")
-   excel_buffer, word_counts_df,_ = most_common(input_text)
+   excel_buffer, word_counts_df, _ = most_common(input_text)
    st.dataframe(word_counts_df, use_container_width=True)
    
+   # Download button for word frequency Excel file
    if excel_buffer:
         st.markdown("""
         <style>
@@ -284,7 +286,7 @@ if translated_text:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Additional button container styling
+   # Additional button container styling
    st.markdown("""
     <style>
         .button-container {
