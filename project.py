@@ -14,13 +14,15 @@ from io import BytesIO
 from langdetect import detect
 import spacy
 from textblob import TextBlob
-import fasttext
+from transformers import BertTokenizer, BertForSequenceClassification
+import torch
 
 nltk.download("stopwords")
 nltk.download("punkt")
 
 nlp = spacy.load("en_core_web_sm")
-model = fasttext.load_model('cc.th.300.bin')
+tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
+model = BertForSequenceClassification.from_pretrained('nlp-waseda/bert-base-thai')
 
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
@@ -90,16 +92,16 @@ def analyze_sentiment(input_text):
     detected_language = detect(input_text)
     
     if detected_language == 'th':
-        sentiment = model.predict(input_text)[0][0]
-        if sentiment == '__label__positive':
+        inputs = tokenizer(input_text, return_tensors="pt", truncation=True, padding=True, max_length=512)
+        outputs = model(**inputs)
+        score = outputs.logits.argmax().item()
+        
+        if score == 1:
             sentiment_result = "Positive"
-            score = 1
-        elif sentiment == '__label__negative':
+        elif score == 0:
             sentiment_result = "Negative"
-            score = -1
         else:
             sentiment_result = "Neutral"
-            score = 0
     else: 
         blob = TextBlob(input_text)
         score = blob.sentiment.polarity
