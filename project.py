@@ -27,7 +27,7 @@ def translate_text_with_openai(text, target_language):
 
     for line in lines:
         if line.strip(): 
-            response = openai.chat.Completion.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-4o-mini-2024-07-18",
                 messages=[
                     {
@@ -60,7 +60,7 @@ def generate_summary(translate_result):
     detected_language = detect(translate_result)  
 
     if detected_language != 'th':
-        response = openai.chat.Completion.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4o-mini-2024-07-18",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
