@@ -19,48 +19,6 @@ nltk.download("punkt")
 
 nlp = spacy.load("en_core_web_sm")
 
-def find_song_and_artist_from_openai(text):
-    openai.api_key = st.session_state.api_key
-    lines = text.splitlines()
-    recommended_songs = []
-
-    song_name = "Unknown Song"
-    song_artist = "Unknown Artist"
-
-    for line in lines:
-        if line.strip():
-            response = openai.ChatCompletion.create(
-                model="gpt-4o-mini-2024-07-18",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            f"You are a professional song lover and listener who could find songs from lyrics efficiently, and you are also know every artists."
-                            f"Find what songs these lyrics come from by comparing the lyrics to the songs you know. "
-                            f"Find the name of the song and the artist. "
-                            f"You could also recommend other 3 from the same artist to recommend users. "
-                            f"Recommended songs might be that artists' popular songs or maybe the songs from that artists that share a lot of same word with the lyrics that users input"
-                        )
-                    },
-                    {"role": "user", "content": line}
-                ],
-                max_tokens=3000
-            )
-            response_content = response['choices'][0]['message']['content'].strip()
-            
-            parts = response_content.split(", ")
-            
-            if len(parts) > 0:
-                song_info = parts[0].split(" - ")
-                if len(song_info) == 2:
-                    song_name = song_info[0].strip()
-                    song_artist = song_info[1].strip()
-
-            if len(parts) > 1:
-                recommended_songs.extend(parts[1:])
-
-    return song_name, song_artist, recommended_songs
-
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
     openai.api_key = st.session_state.api_key
@@ -198,168 +156,95 @@ with st.container():
    summary = None
    word_cloud_image = None
    excel_buffer = None
-   song_name = "Unknown Song"
-   song_artist = "Unknown Artist"
-   recommended_songs = []
-   
+
    # Translate to English
    with col2:
-        if st.button("Translate to ENG"):
-            target_language = "English"
-            if input_text and 'api_key' in st.session_state:
-                song_name, song_artist, recommended_songs = find_song_and_artist_from_openai(input_text)
-
-        # Display Song Name and Artist centered
-            st.markdown(f"""
-            <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                <p style='font-size: 16px; color: #333;'>Song Name: {song_name}</p>
-                <p style='font-size: 16px; color: #333;'>by: {song_artist}</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Display recommended songs in 3 columns
-        if recommended_songs:
-            st.subheader("Recommended Songs:")
-
-            # Create 3 columns for recommended songs
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                if len(recommended_songs) > 0:
-                    st.write(recommended_songs[0])
-            with col2:
-                if len(recommended_songs) > 1:
-                    st.write(recommended_songs[1])
-            with col3:
-                if len(recommended_songs) > 2:
-                    st.write(recommended_songs[2])
-
-        # Translate the text
-        translated_text_with_br = translated_text.replace("\n", "<br>")
-        st.subheader("Translated Text:")
-        st.markdown(f"""
-        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
-        </div>
-        """, unsafe_allow_html=True)   
-        
-        st.subheader("Summary:")
-        st.markdown("""
-        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-            <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
-
-        st.subheader("Top 10 words:")
-        excel_buffer, word_counts_df,_ = most_common(input_text)
-        st.dataframe(word_counts_df, use_container_width=True)
-        
-        if excel_buffer:
-                st.markdown("""
-                <style>
-                    .button-container {{
-                        display: flex;
-                        justify-content: center;
-                        margin-top: 20px;
-                    }}
-                </style>
-                <div class="button-container">
-                """, unsafe_allow_html=True)
-                
-                st.download_button(
-                    label="See all word frequency",
-                    data=excel_buffer,
-                    file_name="word_frequency.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    key="word_frequency_download"
-                )
-
-                st.markdown("</div>", unsafe_allow_html=True)
-                
-                st.markdown("""
-                <style>
-                    .button-container {
-                        display: flex;
-                        justify-content: center;
-                        margin-top: 20px;
-                    }
-                </style>
-                """, unsafe_allow_html=True)
-                
+       if st.button("Translate to ENG"):
+           target_language = "English"
+           if input_text and 'api_key' in st.session_state:
+               # Translate the text
+               translated_text = translate_text_with_openai(input_text, target_language)
+               
+               # Generate analyses
+               summary = generate_summary(translated_text)
+               most_common_result = most_common(input_text)
+               
+               # Store results in session state
+               st.session_state.translated_text = translated_text
+               st.session_state.summary = summary
+               st.session_state.most_common = most_common_result
+               
    # Translate to Thai
    with col3:
-        if st.button("Translate to THA"):
-            target_language = "Thai"
-            if input_text and 'api_key' in st.session_state:
-                song_name, song_artist, recommended_songs = find_song_and_artist_from_openai(input_text)
+       if st.button("Translate to THA"):
+           target_language = "Thai"
+           if input_text and 'api_key' in st.session_state:
+               # Translate the text
+               translated_text = translate_text_with_openai(input_text, target_language)
+               
+               # Generate analyses
+               summary = generate_summary(translated_text)
+               most_common_result = most_common(input_text)
+               
+               # Store results in session state
+               st.session_state.translated_text = translated_text
+               st.session_state.summary = summary
+               st.session_state.most_common = most_common_result
+               
+if 'api_key' not in st.session_state:
+   st.warning("Please enter your OpenAI API key in the sidebar.")
+elif not input_text:
+   st.warning("Please enter some text for translation.")
 
-        # Display Song Name and Artist centered
-            st.markdown(f"""
-            <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                <p style='font-size: 16px; color: #333;'>Song Name: {song_name}</p>
-                <p style='font-size: 16px; color: #333;'>by: {song_artist}</p>
-            </div>
-            """, unsafe_allow_html=True)
+# Display results only if translation has been done
+if translated_text:
+   translated_text_with_br = translated_text.replace("\n", "<br>")
+    
+   st.subheader("Translated Text:")
+   st.markdown(f"""
+   <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+        <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
+   </div>
+   """, unsafe_allow_html=True)   
+   
+   st.subheader("Summary:")
+   st.markdown("""
+   <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+      <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
 
-        # Display recommended songs in 3 columns
-        if recommended_songs:
-            st.subheader("Recommended Songs:")
-
-            # Create 3 columns for recommended songs
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                if len(recommended_songs) > 0:
-                    st.write(recommended_songs[0])
-            with col2:
-                if len(recommended_songs) > 1:
-                    st.write(recommended_songs[1])
-            with col3:
-                if len(recommended_songs) > 2:
-                    st.write(recommended_songs[2])
-
-        # Translate the text
-        translated_text_with_br = translated_text.replace("\n", "<br>")
-        st.subheader("Translated Text:")
-        st.markdown(f"""
-        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
-        </div>
-        """, unsafe_allow_html=True)   
-        
-        st.subheader("Summary:")
+   st.subheader("Top 10 words:")
+   excel_buffer, word_counts_df,_ = most_common(input_text)
+   st.dataframe(word_counts_df, use_container_width=True)
+   
+   if excel_buffer:
         st.markdown("""
-        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-            <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
+        <style>
+            .button-container {{
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }}
+        </style>
+        <div class="button-container">
+        """, unsafe_allow_html=True)
 
-        st.subheader("Top 10 words:")
-        excel_buffer, word_counts_df,_ = most_common(input_text)
-        st.dataframe(word_counts_df, use_container_width=True)
-        
-        if excel_buffer:
-                st.markdown("""
-                <style>
-                    .button-container {{
-                        display: flex;
-                        justify-content: center;
-                        margin-top: 20px;
-                    }}
-                </style>
-                <div class="button-container">
-                """, unsafe_allow_html=True)
-                
-                st.download_button(
-                    label="See all word frequency",
-                    data=excel_buffer,
-                    file_name="word_frequency.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    key="word_frequency_download"
-                )
+        st.download_button(
+            label="See all word frequency",
+            data=excel_buffer,
+            file_name="word_frequency.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key="word_frequency_download"
+        )
 
-                st.markdown("</div>", unsafe_allow_html=True)
-                
-                st.markdown("""
-                <style>
-                    .button-container {
-                        display: flex;
-                        justify-content: center;
-                        margin-top: 20px;
-                    }
-                </style>
-                """, unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # Additional button container styling
+   st.markdown("""
+    <style>
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
