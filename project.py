@@ -262,14 +262,14 @@ if translated_text:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.title("Chatbot with Ongoing Conversation")
-    st.write("You can ask anything, and the chatbot will respond. Keep asking until you're satisfied.")
-    if 'conversation_history' not in st.session_state:
+   st.title("Chatbot with Ongoing Conversation")
+   st.write("You can ask anything, and the chatbot will respond. Keep asking until you're satisfied.")
+   if 'conversation_history' not in st.session_state:
         st.session_state.conversation_history = []
     
-    user_input = st.text_input("Ask me anything:")
+   user_input = st.text_input("Ask me anything:")
     
-    if user_input:
+   if user_input:
         bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
             
         st.session_state.conversation_history = updated_history
