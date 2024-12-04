@@ -204,138 +204,108 @@ with st.container():
    
    # Translate to English
    with col2:
-       if st.button("Translate to ENG"):
+        if st.button("Translate to ENG"):
             target_language = "English"
             if input_text and 'api_key' in st.session_state:
                 song_name, song_artist, recommended_songs = find_song_and_artist_from_openai(input_text)
 
-            # Display Song Name and Artist centered
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                st.markdown(f"""
-                <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                    <p style='font-size: 16px; color: #333;'>Song Name: {song_name}</p>
-                    <p style='font-size: 16px; color: #333;'>by: {song_artist}</p>
-                </div>
-                """, unsafe_allow_html=True)
-
-            # Display recommended songs in 3 columns
-            if recommended_songs:
-                st.subheader("Recommended Songs:")
-
-                # Create 3 columns for recommended songs
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    if len(recommended_songs) > 0:
-                        st.text_area(recommended_songs[0], height=100)
-                with col2:
-                    if len(recommended_songs) > 1:
-                        st.text_area(recommended_songs[1], height=100)
-                with col3:
-                    if len(recommended_songs) > 2:
-                        st.text_area(recommended_songs[2], height=100)
-            
-            # Translate the text
-            translated_text = translate_text_with_openai(input_text, target_language)
-
-            # Display translated text
-            translated_text_with_br = translated_text.replace("\n", "<br>")
-            st.subheader(f"Translated Text to {target_language}")
+        # Display Song Name and Artist centered
             st.markdown(f"""
             <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                    <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
+                <p style='font-size: 16px; color: #333;'>Song Name: {song_name}</p>
+                <p style='font-size: 16px; color: #333;'>by: {song_artist}</p>
             </div>
-            """, unsafe_allow_html=True)  
+            """, unsafe_allow_html=True)
 
-            # Summarize the translated text
-            summary = generate_summary(translated_text)
+        # Display recommended songs in 3 columns
+        if recommended_songs:
+            st.subheader("Recommended Songs:")
 
-            st.subheader("Summary of Lyrics")
-            st.markdown("""
-            <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
+            # Create 3 columns for recommended songs
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                if len(recommended_songs) > 0:
+                    st.write(recommended_songs[0])
+            with col2:
+                if len(recommended_songs) > 1:
+                    st.write(recommended_songs[1])
+            with col3:
+                if len(recommended_songs) > 2:
+                    st.write(recommended_songs[2])
 
-            # Generate Word Frequency and Export to Excel
-            excel_buffer, word_counts_df, filtered_words = most_common(input_text)
+        # Translate the text
+        translated_text = translate_text_with_openai(input_text, target_language)
+        st.subheader(f"Translated Text to {target_language}:")
+        st.text_area("Translated Text", value=translated_text, height=250)
 
-            # Display word frequency as DataFrame
-            st.subheader("Top 10 Words")
-            excel_buffer, word_counts_df,_ = most_common(input_text)
-            st.dataframe(word_counts_df, use_container_width=True)
+        # Generate summary
+        summary = generate_summary(translated_text)
+        st.subheader("Summary of Lyrics:")
+        st.write(summary)
 
-            # Provide Excel download link
-            st.download_button(
-                label="see all frequency",
-                data=excel_buffer,
-                file_name="word_frequency.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+        # Word frequency analysis
+        excel_buffer, word_counts_df, filtered_words = most_common(input_text)
+        st.subheader("Word Frequency (Top 10 words):")
+        st.dataframe(word_counts_df)
+
+        # Option to download word frequency Excel
+        st.download_button(
+            label="Download Word Frequency Excel",
+            data=excel_buffer,
+            file_name="word_frequency.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
 
    # Translate to Thai
    with col3:
-       if st.button("Translate to THA"):
+        if st.button("Translate to THA"):
             target_language = "Thai"
             if input_text and 'api_key' in st.session_state:
                 song_name, song_artist, recommended_songs = find_song_and_artist_from_openai(input_text)
 
-            # Display Song Name and Artist centered
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                st.markdown(f"""
-                <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                    <p style='font-size: 16px; color: #333;'>Song Name: {song_name}</p>
-                    <p style='font-size: 16px; color: #333;'>by: {song_artist}</p>
-                </div>
-                """, unsafe_allow_html=True)
-
-            # Display recommended songs in 3 columns
-            if recommended_songs:
-                st.subheader("Recommended Songs:")
-
-                # Create 3 columns for recommended songs
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    if len(recommended_songs) > 0:
-                        st.text_area(recommended_songs[0], height=100)
-                with col2:
-                    if len(recommended_songs) > 1:
-                        st.text_area(recommended_songs[1], height=100)
-                with col3:
-                    if len(recommended_songs) > 2:
-                        st.text_area(recommended_songs[2], height=100)
-
-            # Translate the text
-            translated_text = translate_text_with_openai(input_text, target_language)
-
-            # Display translated text
-            translated_text_with_br = translated_text.replace("\n", "<br>")
-            st.subheader(f"Translated Text to {target_language}")
+        # Display Song Name and Artist centered
             st.markdown(f"""
             <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                    <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
+                <p style='font-size: 16px; color: #333;'>Song Name: {song_name}</p>
+                <p style='font-size: 16px; color: #333;'>by: {song_artist}</p>
             </div>
-            """, unsafe_allow_html=True)  
+            """, unsafe_allow_html=True)
 
-            # Summarize the translated text
-            summary = generate_summary(translated_text)
+        # Display recommended songs in 3 columns
+        if recommended_songs:
+            st.subheader("Recommended Songs:")
 
-            st.subheader("Summary of Lyrics")
-            st.markdown("""
-            <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-                <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
+            # Create 3 columns for recommended songs
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                if len(recommended_songs) > 0:
+                    st.write(recommended_songs[0])
+            with col2:
+                if len(recommended_songs) > 1:
+                    st.write(recommended_songs[1])
+            with col3:
+                if len(recommended_songs) > 2:
+                    st.write(recommended_songs[2])
 
-            # Generate Word Frequency and Export to Excel
-            excel_buffer, word_counts_df, filtered_words = most_common(input_text)
+        # Translate the text
+        translated_text = translate_text_with_openai(input_text, target_language)
+        st.subheader(f"Translated Text to {target_language}:")
+        st.text_area("Translated Text", value=translated_text, height=250)
 
-            # Display word frequency as DataFrame
-            st.subheader("Top 10 Words")
-            excel_buffer, word_counts_df,_ = most_common(input_text)
-            st.dataframe(word_counts_df, use_container_width=True)
-            
-            # Provide Excel download link
-            st.download_button(
-                label="see all frequency",
-                data=excel_buffer,
-                file_name="word_frequency.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+        # Generate summary
+        summary = generate_summary(translated_text)
+        st.subheader("Summary of Lyrics:")
+        st.write(summary)
+
+        # Word frequency analysis
+        excel_buffer, word_counts_df, filtered_words = most_common(input_text)
+        st.subheader("Word Frequency (Top 10 words):")
+        st.dataframe(word_counts_df)
+
+        # Option to download word frequency Excel
+        st.download_button(
+            label="Download Word Frequency Excel",
+            data=excel_buffer,
+            file_name="word_frequency.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
