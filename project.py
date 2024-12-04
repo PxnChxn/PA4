@@ -132,10 +132,8 @@ def most_common(input_text):
     return excel_buffer, word_counts_df, filtered_words
 
 def chatbot_response(user_input, conversation_history):
-    # Append user input to the conversation history
     conversation_history.append(f"User: {user_input}")
     
-    # Define the prompt for the chatbot to discuss the song's lyrics
     prompt = "\n".join(conversation_history) + "\nChatbot (about song lyrics):"
     
     response = openai.ChatCompletion.create(
@@ -289,7 +287,12 @@ if 'conversation_history' not in st.session_state:
 user_input = st.text_input("Ask me anything:")
 if user_input:
         bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
-            
         st.session_state.conversation_history = updated_history
-        st.write("\n".join(st.session_state.conversation_history))
-    
+        
+        # Display the conversation so far
+        for message in st.session_state.conversation_history:
+            if "User:" in message:
+                st.markdown(f"**User:** {message.replace('User: ', '')}")
+            elif "Chatbot:" in message:
+                st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
+        
