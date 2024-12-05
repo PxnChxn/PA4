@@ -86,25 +86,28 @@ def tokenization(input_text):
 
 def translate_words(input_text):
     detected_language = detect(input_text)
-
+    
     if detected_language == 'th':
-        words = pythainlp.tokenize.word_tokenize(input_text) 
-        target_language = 'en' 
+        words = pythainlp.tokenize.word_tokenize(input_text)
+        target_language = 'en'
     else:
-        words = tokenization(input_text) 
-        target_language = 'th' 
+        words = tokenization(input_text)
+        target_language = 'th'
     
     stopwords_combined = get_stopwords()
     filtered_words = [word for word in words if word not in stopwords_combined]
 
+    if not filtered_words:
+        return "No valid words to translate."
+
     word_translation = []
-    
+
     for word in filtered_words:
         if target_language == 'en':
             translation = Translator(to_lang="en").translate(word)
         else:
             translation = Translator(to_lang="th").translate(word)
-            
+
         if detected_language == 'th':
             ipa = epitran_thai.transliterate(word)
         else:
@@ -117,7 +120,7 @@ def translate_words(input_text):
     excel_buffer = io.BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
         word_translation_df.to_excel(writer, index=True, sheet_name="Word Translation")
-    
+
     excel_buffer.seek(0)
 
     return excel_buffer, word_translation_df
