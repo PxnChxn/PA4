@@ -10,14 +10,12 @@ from pythainlp.tokenize import word_tokenize as thai_tokenize
 import pandas as pd
 import openpyxl
 import io
-import os
 from io import BytesIO
 from langdetect import detect
 import spacy
+from textblob import TextBlob
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
-import requests
-from translate import Translator
 
 nltk.download("stopwords")
 nltk.download("punkt")
@@ -79,43 +77,6 @@ def tokenization(input_text):
        tokens = [token.text for token in doc]
    tokens = [token for token in tokens if token.strip() and not re.match(r'[^\w\s]', token)]
    return tokens
-
-def translate_words(input_text):
-    detected_language = detect(input_text)
-    
-    if detected_language == 'th':
-        words = pythainlp.tokenize.word_tokenize(input_text)
-        target_language = 'en'
-    else:
-        words = tokenization(input_text)
-        target_language = 'th'
-    
-    stopwords_combined = get_stopwords()
-    filtered_words = [word for word in words if word not in stopwords_combined]
-
-    if not filtered_words:
-        return "No valid words to translate."
-
-    word_translation = []
-
-    for word in filtered_words:
-        if target_language == 'en':
-            translation = Translator(to_lang="en").translate(word)
-        else:
-            translation = Translator(to_lang="th").translate(word)
-        
-        word_translation.append([word, translation])
-
-    word_translation_df = pd.DataFrame(word_translation, columns=["Word", "Translation"], index=range(1, len(word_translation) + 1))
-
-    excel_buffer = io.BytesIO()
-    with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
-        word_translation_df.to_excel(writer, index=True, sheet_name="Word Translation")
-
-    excel_buffer.seek(0)
-
-    return excel_buffer, word_translation_df
-
 
 def generate_summary(translated_text):
     detected_language = detect(translated_text)  
@@ -243,7 +204,6 @@ with st.container():
            if input_text and 'api_key' in st.session_state:
                # Translate the text
                translated_text = translate_text_with_openai(input_text, target_language)
-               word_translation_df = translate_words(input_text)
                
                # Generate analyses
                summary = generate_summary(translated_text)
@@ -251,7 +211,6 @@ with st.container():
                
                # Store results in session state
                st.session_state.translated_text = translated_text
-               st.session_state.word_translation = word_translation_df  
                st.session_state.summary = summary
                st.session_state.most_common = most_common_result
                
@@ -262,7 +221,6 @@ with st.container():
            if input_text and 'api_key' in st.session_state:
                # Translate the text
                translated_text = translate_text_with_openai(input_text, target_language)
-               word_translation_df = translate_words(input_text)
                
                # Generate analyses
                summary = generate_summary(translated_text)
@@ -270,7 +228,6 @@ with st.container():
                
                # Store results in session state
                st.session_state.translated_text = translated_text
-               st.session_state.word_translation = word_translation_df  
                st.session_state.summary = summary
                st.session_state.most_common = most_common_result
                
@@ -316,18 +273,6 @@ if st.session_state.translated_text:
     </div>
     """, unsafe_allow_html=True)
     
-    st.subheader("Word Translation:")
-    excel_buffer, word_translation_df = translate_words(input_text)
-    st.dataframe(word_translation_df, use_container_width=True)
-    if excel_buffer:
-        st.download_button(
-            label="Download the table",
-            data=excel_buffer,
-            file_name="word_translation.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            key="word_translation_download"
-        )
-
     st.subheader("Summary:")
     st.markdown(f"""
     <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
