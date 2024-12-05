@@ -14,7 +14,6 @@ import os
 from io import BytesIO
 from langdetect import detect
 import spacy
-from textblob import TextBlob
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 from googletrans import Translator
