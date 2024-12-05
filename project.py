@@ -131,9 +131,15 @@ def most_common(input_text):
 
     return excel_buffer, word_counts_df, filtered_words
 
-def chatbot_response(user_input, conversation_history):
+def chatbot_response(user_input, conversation_history, translated_text=None, summary=None):
     openai.api_key = st.session_state.api_key
+    
     conversation_history.append(f"User: {user_input}")
+    
+    if translated_text:
+        conversation_history.append(f"Translated Text: {translated_text}")
+    if summary:
+        conversation_history.append(f"Summary: {summary}")
     
     prompt = "\n".join(conversation_history) + "\nChatbot (about song lyrics):"
     
@@ -151,6 +157,7 @@ def chatbot_response(user_input, conversation_history):
         stop=None, 
         temperature=0.7  
     )
+    
     bot_reply = response['choices'][0]['message']['content'].strip()
     conversation_history.append(f"Chatbot: {bot_reply}")
     
@@ -288,7 +295,7 @@ if 'conversation_history' not in st.session_state:
 
 if 'previous_input' not in st.session_state:
     st.session_state.previous_input = ""
-    
+
 user_input = st.text_area("Ask about the song:")
 
 if user_input != st.session_state.previous_input:
@@ -297,7 +304,6 @@ if user_input != st.session_state.previous_input:
 
 submit_button = st.button("Submit")
 
-# Check if the submit button is clicked
 if submit_button and user_input:
     bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
     
