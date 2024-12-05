@@ -15,4 +15,3 @@ requests
 transformers
 torch
 translate
-flite
