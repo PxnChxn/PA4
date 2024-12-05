@@ -250,7 +250,7 @@ if input_text != st.session_state.previous_input:
 # Perform translation only when input_text is not empty
 if input_text and not st.session_state.translated_text:
     st.session_state.translated_text = translate_text_with_openai(input_text)
-    st.session_state.summary = generate_summary(translate_result)
+    st.session_state.summary = generate_summary(translated_text)
 
 # Display results only if translation has been done
 if st.session_state.translated_text:
@@ -266,7 +266,7 @@ if st.session_state.translated_text:
     st.subheader("Summary:")
     st.markdown(f"""
     <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-      <p style='font-size: 16px; color: #444;'>+ summary +</p>
+      <p style='font-size: 16px; color: #444;'> {summary} </p>
     </div>
     """, unsafe_allow_html=True)
 
