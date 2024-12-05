@@ -312,6 +312,3 @@ if submit_button and user_input:
             st.markdown(f"**User:** {message.replace('User: ', '')}")
         elif "Chatbot:" in message:
             st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
-
-            elif "Chatbot:" in message:
-                st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
