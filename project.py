@@ -28,7 +28,7 @@ nlp = spacy.load("en_core_web_sm")
 translator = Translator()
 
 epitran_eng = epitran.Epitran('eng-Latn')
-epitran_thai = epitran.Epitran('tha-Tai')
+epitran_thai = epitran.Epitran('tha-Thai')
 
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
