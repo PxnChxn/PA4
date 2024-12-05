@@ -12,3 +12,5 @@ langdetect
 googletrans
 https://github.com/dmort27/epitran.git
 requests
+transformers
+torch
