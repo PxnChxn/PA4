@@ -227,10 +227,34 @@ if 'api_key' not in st.session_state:
    st.warning("Please enter your OpenAI API key in the sidebar.")
 elif not input_text:
    st.warning("Please enter some text for translation.")
+# Store the current input in session_state to detect changes
+if 'previous_input' not in st.session_state:
+    st.session_state.previous_input = ""
+
+if 'translated_text' not in st.session_state:
+    st.session_state.translated_text = None
+
+if 'summary' not in st.session_state:
+    st.session_state.summary = None
+
+if 'conversation_history' not in st.session_state:
+    st.session_state.conversation_history = []
+
+# Check if input_text has changed
+if input_text != st.session_state.previous_input:
+    # Reset the relevant session state variables
+    st.session_state.translated_text = None
+    st.session_state.summary = None
+    st.session_state.conversation_history = []
+    st.session_state.previous_input = input_text
+
+if input_text and not st.session_state.translated_text:
+    st.session_state.translated_text = translate_text_with_openai(input_text, target_language="English")
+    st.session_state.summary = generate_summary(st.session_state.translated_text)
 
 # Display results only if translation has been done
-if translated_text:
-    translated_text_with_br = translated_text.replace("\n", "<br>")
+if st.session_state.translated_text:
+    translated_text_with_br = st.session_state.translated_text.replace("\n", "<br>")
     
     st.subheader("Translated Text:")
     st.markdown(f"""
@@ -239,32 +263,20 @@ if translated_text:
     </div>
     """, unsafe_allow_html=True)
    
-    # Display summary
     st.subheader("Summary:")
     st.markdown(f"""
     <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-      <p style='font-size: 16px; color: #444;'>{summary}</p>
+      <p style='font-size: 16px; color: #444;'>{st.session_state.summary}</p>
     </div>
     """, unsafe_allow_html=True)
 
     # Display the top 10 words table
-    st.subheader("Top 10 words:")
+    st.subheader("Top 10 Words:")
     excel_buffer, word_counts_df, _ = most_common(input_text)
     st.dataframe(word_counts_df, use_container_width=True)
    
-   # Download button for word frequency Excel file
+    # Download button for word frequency Excel file
     if excel_buffer:
-        st.markdown("""
-        <style>
-            .button-container {{
-                display: flex;
-                justify-content: center;
-                margin-top: 20px;
-            }}
-        </style>
-        <div class="button-container">
-        """, unsafe_allow_html=True)
-
         st.download_button(
             label="See all word frequency",
             data=excel_buffer,
@@ -273,34 +285,11 @@ if translated_text:
             key="word_frequency_download"
         )
 
-        st.markdown("</div>", unsafe_allow_html=True)
-
-   # Additional button container styling
-    st.markdown("""
-     <style>
-        .button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-     </style>
-     """, unsafe_allow_html=True)
-
     # Chat interface
     st.title("Song Lyric Chatbot")
     st.write("Chatbot will discuss the lyrics with you. Keep the conversation going until you're satisfied.")
     
-    if 'conversation_history' not in st.session_state:
-        st.session_state.conversation_history = []
-    
-    if 'previous_input' not in st.session_state:
-        st.session_state.previous_input = ""
-    
     user_input = st.text_area("Ask about the song:")
-    
-    if user_input != st.session_state.previous_input:
-        st.session_state.conversation_history = []
-        st.session_state.previous_input = user_input
     
     submit_button = st.button("Submit")
     
@@ -312,5 +301,8 @@ if translated_text:
         for message in st.session_state.conversation_history:
             if "User:" in message:
                 st.markdown(f"**User:** {message.replace('User: ', '')}")
+            elif "Chatbot:" in message:
+                st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
+
             elif "Chatbot:" in message:
                 st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
