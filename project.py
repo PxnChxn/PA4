@@ -27,8 +27,8 @@ nlp = spacy.load("en_core_web_sm")
 
 translator = Translator()
 
-url_eng = '.streamlit/eng-Latn.csv'
-url_thai = '.streamlit/tha-Thai.csv'
+url_eng = 'https://raw.githubusercontent.com/dmort27/epitran/master/epitran/data/space/eng-Latn.csv'
+url_thai = 'https://raw.githubusercontent.com/dmort27/epitran/master/epitran/data/map/tha-Thai.csv'
 eng_file = 'eng-Latn.csv'
 thai_file = 'tha-Thai.csv'
 response_eng = requests.get(url_eng)
