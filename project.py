@@ -22,7 +22,7 @@ from translate import Translator
 nltk.download("stopwords")
 nltk.download("punkt")
 
-nlp = spacy.load("en_core_web_sm"
+nlp = spacy.load("en_core_web_sm")
 
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
