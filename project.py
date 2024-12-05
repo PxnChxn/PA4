@@ -317,7 +317,7 @@ if input_text != st.session_state.previous_input:
 # Perform translation only when input_text is not empty
 if input_text and not st.session_state.translated_text:
     st.session_state.translated_text = translate_text_with_openai(input_text, target_language)
-    st.session_state.translated_word = translate_word(input_text, target_language)
+    st.session_state.translated_word = translate_text(input_text, target_language)
     st.session_state.summary = generate_summary(st.session_state.translated_text)
 
 # Display results only if translation has been done
