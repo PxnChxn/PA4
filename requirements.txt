@@ -9,3 +9,5 @@ openpyxl
 wordcloud
 matplotlib
 langdetect
+googletrans
+epitran
