@@ -10,4 +10,4 @@ wordcloud
 matplotlib
 langdetect
 googletrans
-git clone https://github.com/dmort27/epitran.git
+https://github.com/dmort27/epitran.git
