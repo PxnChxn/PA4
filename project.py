@@ -250,15 +250,13 @@ if 'conversation_history' not in st.session_state:
 # Check if input_text has changed
 if input_text != st.session_state.previous_input:
     # Reset the relevant session state variables
-    st.session_state.translated_text = None
-    st.session_state.summary = None
     st.session_state.conversation_history = []
     st.session_state.previous_input = input_text
 
 # Perform translation only when input_text is not empty
 if input_text and not st.session_state.translated_text:
     st.session_state.translated_text = translate_text_with_openai(input_text)
-    st.session_state.summary = generate_summary(translate_resul)
+    st.session_state.summary = generate_summary(translate_result)
 
 # Display results only if translation has been done
 if st.session_state.translated_text:
