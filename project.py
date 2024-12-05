@@ -65,7 +65,7 @@ def translate_text_with_openai(text, target_language):
 def translate_text(input_text, target_language):
     def extract_words(text):
         if re.findall(r"[ก-์๐-๙]+", text): 
-            tokens = pythainlp.tokenize.word_tokenize(input_text)  
+            tokens = pythainlp.tokenize.word_tokenize(text)  
         else:  
             tokens = text.split() 
         return tokens
