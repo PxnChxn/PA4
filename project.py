@@ -235,40 +235,20 @@ elif not input_text:
    st.warning("Please enter some text for translation.")
     
 # Store the current input in session_state to detect changes
-if 'previous_input' not in st.session_state:
-    st.session_state.previous_input = ""
-
-if 'conversation_history' not in st.session_state:
-    st.session_state.conversation_history = []
-
-# Check if input_text has changed
-if input_text != st.session_state.previous_input:
-    # Reset the relevant session state variables
-    st.session_state.conversation_history = []
-    st.session_state.previous_input = input_text
-
-# Perform translation only when input_text is not empty
-if input_text and not st.session_state.translated_text:
-    st.session_state.translated_text = translate_text_with_openai(input_text)
-    st.session_state.summary = generate_summary(translated_text)
-
-# Display results only if translation has been done
-if st.session_state.translated_text:
-    translated_text_with_br = st.session_state.translated_text.replace("\n", "<br>")
+if translated_text:
+    translated_text_with_br = translated_text.replace("\n", "<br>")
     
     st.subheader("Translated Text:")
     st.markdown(f"""
     <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
         <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
     </div>
-    """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)   
    
     st.subheader("Summary:")
-    st.markdown(f"""
+    st.markdown("""
     <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-      <p style='font-size: 16px; color: #444;'> {summary} </p>
-    </div>
-    """, unsafe_allow_html=True)
+      <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
 
     # Display the top 10 words table
     st.subheader("Top 10 Words:")
