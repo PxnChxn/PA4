@@ -1,12 +1,5 @@
 # Lyrics Translator 🎤
 
-## Key Features:
-- **Song Lyric Translation**: Translate lyrics from one language to another (either Thai or English), while maintaining their emotional impact and artistic quality.
-- **Word-Level Translation**: View word translations in a table, along with their corresponding parts of speech. You can also download the results in an Excel file.
-- **Summary Generation**: Summarize the translated lyrics, retaining key messages and emotional tones.
-- **Word Frequency Analysis**: Explore the most common words in the input text and download a word frequency report.
-- **Song Lyric Chatbot**: Engage with a chatbot that discusses song lyrics, providing deeper insights into their meaning and themes.
-
 ## Getting Started
 
 You can access the app through the following link:  
@@ -45,7 +38,7 @@ The app utilizes the following Python libraries and frameworks:
    The user inputs song lyrics in either Thai or English.
 2. **Translation**:  
    The app uses OpenAI's models to translate the lyrics into the target language, preserving the artistic qualities of the original song.
-3. **Word-Level Translation**:  
+3. **Word Translation**:  
    The app generates a word-by-word translation and displays it in a table.
 4. **Summary**:  
    The app generates a summary of the translated lyrics, capturing the key message and emotional tone.
