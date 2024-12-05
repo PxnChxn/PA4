@@ -71,9 +71,11 @@ def translate_text(input_text, target_language):
         return tokens
     
     words = extract_words(input_text)
-    words_to_translate = [word.strip(string.punctuation).lower() for word in words if word.strip(string.punctuation).lower()]
+    words_to_trans = [word.strip(string.punctuation).lower() for word in words if word.strip(string.punctuation).lower()]
 
-    words_to_translate = set(words_to_translate)
+    words_to_trans_to_set = set(words_to_translate)
+
+    words_to_translate = list(words_to_trans_to_set)
     
     def translate_word(input_word, target_language):
         response = openai.ChatCompletion.create(
