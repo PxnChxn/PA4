@@ -136,11 +136,13 @@ def chatbot_response(user_input, conversation_history, translated_text=None, sum
     
     conversation_history.append(f"User: {user_input}")
     
+    if input_text:
+        conversation_history.append(f"Lyrics: {input_text}")
     if translated_text:
         conversation_history.append(f"Translated Text: {translated_text}")
     if summary:
         conversation_history.append(f"Summary: {summary}")
-    
+
     prompt = "\n".join(conversation_history) + "\nChatbot (about song lyrics):"
     
     response = openai.ChatCompletion.create(
