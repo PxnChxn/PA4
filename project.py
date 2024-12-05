@@ -132,7 +132,7 @@ def most_common(input_text):
     return excel_buffer, word_counts_df, filtered_words
 
 def chatbot_response(user_input, conversation_history):
-    
+    openai.api_key = st.session_state.api_key
     conversation_history.append(f"User: {user_input}")
     
     prompt = "\n".join(conversation_history) + "\nChatbot (about song lyrics):"
