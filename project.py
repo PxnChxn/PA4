@@ -250,6 +250,7 @@ with st.container():
    col1, col2, col3, col4 = st.columns(4)
 
    # Initialize variables
+   target_language = None
    translated_text = None
    summary = None
    excel_buffer_1 = None
