@@ -332,7 +332,7 @@ if st.session_state.translated_text:
     """, unsafe_allow_html=True)
 
     st.subheader("Word with Translation")
-    excel_buffer_1, translation_df = translate_text(input_text, target_language)
+    excel_buffer_1, translation_df = st.session_state.translated_word
     st.dataframe(translation_df, use_container_width=True)
     if excel_buffer_1:
         st.download_button(
