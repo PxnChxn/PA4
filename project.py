@@ -122,7 +122,7 @@ def most_common(input_text):
 
     excel_buffer = io.BytesIO()
     word_all_counts_sorted = word_counts.most_common()
-    word_all_counts_df = pd.DataFrame(word_all_counts_sorted, columns=["Word", "Frequency"])
+    word_all_counts_df = pd.DataFrame(word_all_counts_sorted, columns=["Word", "Frequency"], index=range(1, len(word_counts_sorted) + 1))
 
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
         word_all_counts_df.to_excel(writer, index=True, sheet_name="Word Frequency")
