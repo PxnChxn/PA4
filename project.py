@@ -233,20 +233,16 @@ if 'api_key' not in st.session_state:
    st.warning("Please enter your OpenAI API key in the sidebar.")
 elif not input_text:
    st.warning("Please enter some text for translation.")
+    
 # Store the current input in session_state to detect changes
 if 'previous_input' not in st.session_state:
     st.session_state.previous_input = ""
-
-if 'translated_text' not in st.session_state:
-    st.session_state.translated_text = None
 
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
 
 # Check if input_text has changed
 if input_text != st.session_state.previous_input:
-    # Reset the relevant session state variables
-    st.session_state.translated_text = None
     st.session_state.conversation_history = []
     st.session_state.previous_input = input_text
 
