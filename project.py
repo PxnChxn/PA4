@@ -28,25 +28,16 @@ nlp = spacy.load("en_core_web_sm")
 
 translator = Translator()
 
-url_eng = 'https://github.com/PxnChxn/PA4/blob/main/.streamlit/eng-Latn.csv?raw=true'
-url_thai = 'https://github.com/PxnChxn/PA4/blob/main/.streamlit/tha-Thai.csv?raw=true'
-
+url_eng = 'https://github.com/PxnChxn/PA4/raw/main/.streamlit/eng-Latn.csv'
+url_thai = 'https://github.com/PxnChxn/PA4/raw/main/.streamlit/tha-Thai.csv'
 eng_file = 'eng-Latn.csv'
 thai_file = 'tha-Thai.csv'
-
 response_eng = requests.get(url_eng)
 with open(eng_file, 'wb') as f:
     f.write(response_eng.content)
-
-# ดาวน์โหลดไฟล์ CSV ของภาษาไทย
 response_thai = requests.get(url_thai)
 with open(thai_file, 'wb') as f:
     f.write(response_thai.content)
-
-# ตรวจสอบพาธปัจจุบัน
-print(f"Current Directory: {os.getcwd()}")
-
-# สร้าง Epitran Object โดยใช้พาธไฟล์ที่ดาวน์โหลด
 epitran_eng = epitran.Epitran(os.path.join(os.getcwd(), eng_file))
 epitran_thai = epitran.Epitran(os.path.join(os.getcwd(), thai_file))
 
