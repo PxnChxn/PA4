@@ -98,7 +98,9 @@ def translate_text(input_text, target_language):
             return doc[0].pos_ 
     
     translated_words = []
-
+    translations = {}
+    pos_tags = {}
+    
     for word in words_to_translate:
         translated_word = translate_word(word, target_language)
         translations[word] = translated_word
