@@ -151,7 +151,6 @@ def chatbot_response(user_input, conversation_history):
         stop=None, 
         temperature=0.7  
     )
-    
     bot_reply = response['choices'][0]['message']['content'].strip()
     conversation_history.append(f"Chatbot: {bot_reply}")
     
@@ -279,40 +278,6 @@ if translated_text:
         }
     </style>
     """, unsafe_allow_html=True)
-
-import openai
-import streamlit as st
-
-# Set up the OpenAI API key
-openai.api_key = 'YOUR_API_KEY'  # Replace with your actual OpenAI API key
-
-# Function to generate chatbot response based on song lyrics
-def chatbot_response(user_input, conversation_history):
-    # Append user input to the conversation history
-    conversation_history.append(f"User: {user_input}")
-    
-    # Define the prompt for the chatbot to discuss the song's lyrics
-    prompt = "\n".join(conversation_history) + "\nChatbot (about song lyrics):"
-    
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini-2024-07-18",  # Use the model suited for the task
-        messages=[
-            {"role": "system", "content": 
-                "You are a helpful chatbot that specializes in discussing song lyrics. "
-                "Your task is to engage in conversations based on the lyrics that the user provides, "
-                "giving meaningful and relevant responses while focusing on the themes, emotions, and messages within the lyrics."},
-            {"role": "user", "content": user_input}
-        ],
-        max_tokens=350,
-        n=1, 
-        stop=None, 
-        temperature=0.7  
-    )
-    
-    bot_reply = response['choices'][0]['message']['content'].strip()
-    conversation_history.append(f"Chatbot: {bot_reply}")
-    
-    return bot_reply, conversation_history
 
 # Chat interface
 st.title("Song Lyric Chatbot")
