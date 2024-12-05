@@ -316,7 +316,7 @@ def chatbot_response(user_input, conversation_history):
 
 # Chat interface
 st.title("Song Lyric Chatbot")
-st.write("Chatbot will discuss the kyrics with you. Keep the conversation going until you're satisfied.")
+st.write("Chatbot will discuss the lyrics with you. Keep the conversation going until you're satisfied.")
 
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
@@ -324,14 +324,18 @@ if 'conversation_history' not in st.session_state:
 if 'previous_input' not in st.session_state:
     st.session_state.previous_input = ""
     
-user_input = st.text_area("Enter song lyrics or ask about the song:")
+user_input = st.text_area("Ask about the song:")
 
 if user_input != st.session_state.previous_input:
-    # If input changes, reset the conversation history
     st.session_state.conversation_history = []
     st.session_state.previous_input = user_input
-if user_input:
+
+submit_button = st.button("Submit")
+
+# Check if the submit button is clicked
+if submit_button and user_input:
     bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
+    
     st.session_state.conversation_history = updated_history
     
     for message in st.session_state.conversation_history:
@@ -339,4 +343,3 @@ if user_input:
             st.markdown(f"**User:** {message.replace('User: ', '')}")
         elif "Chatbot:" in message:
             st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
-
