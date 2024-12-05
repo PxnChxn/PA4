@@ -22,6 +22,11 @@ nltk.download("punkt")
 
 nlp = spacy.load("en_core_web_sm")
 
+if 'translated_text' not in st.session_state:
+    st.session_state.translated_text = None  # กำหนดค่าเริ่มต้น
+if 'summary' not in st.session_state:
+    st.session_state.summary = None  # กำหนดค่าเริ่มต้น
+
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
     openai.api_key = st.session_state.api_key
