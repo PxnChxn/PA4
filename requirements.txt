@@ -10,7 +10,7 @@ wordcloud
 matplotlib
 langdetect
 googletrans
-pip install epitran
+epitran
 requests
 transformers
 torch
