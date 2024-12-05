@@ -15,4 +15,4 @@ requests
 transformers
 torch
 translate
-flite-python
+flite
