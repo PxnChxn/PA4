@@ -103,15 +103,21 @@ def translate_words(input_text):
     word_translation = []
 
     for word in filtered_words:
-        if target_language == 'en':
-            translation = Translator(to_lang="en").translate(word)
-        else:
-            translation = Translator(to_lang="th").translate(word)
+        try:
+            if target_language == 'en':
+                translation = Translator(to_lang="en").translate(word)
+            else:
+                translation = Translator(to_lang="th").translate(word)
+        except Exception as e:
+            translation = f"Error: {e}"
 
-        if detected_language == 'th':
-            ipa = epitran_thai.transliterate(word)
-        else:
-            ipa = epitran_eng.transliterate(word)
+        try:
+            if detected_language == 'th':
+                ipa = epitran_thai.transliterate(word)
+            else:
+                ipa = epitran_eng.transliterate(word)
+        except Exception as e:
+            ipa = f"Error: {e}"
 
         word_translation.append([word, ipa, translation])
 
@@ -124,6 +130,7 @@ def translate_words(input_text):
     excel_buffer.seek(0)
 
     return excel_buffer, word_translation_df
+
 
 def generate_summary(translated_text):
     detected_language = detect(translated_text)  
