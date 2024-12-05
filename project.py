@@ -2,11 +2,13 @@ import pythainlp.corpus
 import streamlit as st
 import openai
 import re
+import string
 from collections import Counter
 import nltk
 from nltk.corpus import stopwords
 import pythainlp
 from pythainlp.tokenize import word_tokenize as thai_tokenize
+from pythainlp import pos_tag
 import pandas as pd
 import openpyxl
 import io
@@ -59,6 +61,59 @@ def translate_text_with_openai(text, target_language):
 
     translated_text = "\n".join(translated_lines)
     return translated_text
+
+def translate_text(input_text, target_language):
+    def extract_words(text):
+        if re.findall(r"[ก-์๐-๙]+", text): 
+            tokens = pythainlp.tokenize.word_tokenize(input_text)  
+        else:  
+            tokens = text.split() 
+        return tokens
+    
+    words = extract_words(input_text)
+    
+    words_to_translate = set()
+    for word in words:
+        cleaned_word = word.strip(string.punctuation).lower()  
+        if cleaned_word and cleaned_word not in string.punctuation:
+            words_to_translate.add(cleaned_word)
+    
+    def translate_word(input_word, target_language):
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini-2024-07-18", 
+            messages=[
+                {"role": "system", "content": f"You are a translator that translates a word into {target_language}."},
+                {"role": "user", "content": input_word}
+            ],
+            max_tokens=100
+        )
+        return response.choices[0]["message"]["content"].strip()
+    
+    def get_pos(word, language):
+        if language == "Thai":
+            pos_tags = pos_tag([word], corpus="orchid")
+            return pos_tags[0][1] 
+        else:
+            doc = nlp(word)
+            return doc[0].pos_ 
+    
+    translations = {}
+    pos_tags = {}
+    for word in words_to_translate:
+        translated_word = translate_word(word, target_language)
+        translations[word] = translated_word
+
+        language = "Thai" if re.match(r'[ก-์๐-๙]+', word) else "English"
+        pos_tags[word] = get_pos(word, language)
+    
+    excel_buffer = io.BytesIO()
+    with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+        translation_df.to_excel(writer, index=True, sheet_name="Translations")
+    
+    excel_buffer.seek(0)
+
+    return excel_buffer, translation_df
+
 
 def get_stopwords():
    english_stopwords = set(stopwords.words('english'))
@@ -204,6 +259,7 @@ with st.container():
            if input_text and 'api_key' in st.session_state:
                # Translate the text
                translated_text = translate_text_with_openai(input_text, target_language)
+               translated_word = translate_text(input_text, target_language)
                
                # Generate analyses
                summary = generate_summary(translated_text)
@@ -211,6 +267,7 @@ with st.container():
                
                # Store results in session state
                st.session_state.translated_text = translated_text
+               st.session_state.translated_word = translated_word
                st.session_state.summary = summary
                st.session_state.most_common = most_common_result
                
@@ -221,6 +278,7 @@ with st.container():
            if input_text and 'api_key' in st.session_state:
                # Translate the text
                translated_text = translate_text_with_openai(input_text, target_language)
+               translated_word = translate_text(input_text, target_language)
                
                # Generate analyses
                summary = generate_summary(translated_text)
@@ -228,6 +286,7 @@ with st.container():
                
                # Store results in session state
                st.session_state.translated_text = translated_text
+               st.session_state.translated_word = translated_word
                st.session_state.summary = summary
                st.session_state.most_common = most_common_result
                
@@ -272,6 +331,17 @@ if st.session_state.translated_text:
         <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
     </div>
     """, unsafe_allow_html=True)
+
+    st.subheader("Word with Translation")
+    excel_buffer, translation_df = translate_text(input_text, target_language)
+    st.dataframe(translation_df, use_container_width=True)
+    st.download_button(
+        label="Download the table",
+        data=excel_buffer,
+        file_name="translations.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        key="word_translation_table_download"
+    )
     
     st.subheader("Summary:")
     st.markdown(f"""
