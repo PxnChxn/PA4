@@ -164,9 +164,8 @@ st.set_page_config(page_title="Lyrics Translator 🎤", page_icon=".streamlit/fa
 st.sidebar.title("API Key")
 api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
 
-# Store the API key 
 if api_key:
-   st.session_state.api_key = api_key 
+    st.session_state.api_key = api_key 
 
 # Header
 st.title("Translate the Lyrics ✨")
