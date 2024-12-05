@@ -280,19 +280,25 @@ if translated_text:
     </style>
     """, unsafe_allow_html=True)
 
-st.title("Chatbot with Ongoing Conversation")
-st.write("You can ask anything, and the chatbot will respond. Keep asking until you're satisfied.")
+st.title("Song Lyric Chatbot")
+st.write("You can share song lyrics, and the chatbot will discuss them with you. Keep the conversation going until you're satisfied.")
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
-user_input = st.text_input("Ask me anything:")
+    st.session_state.previous_input = ""
+user_input = st.text_area("Ask about the song:")
+
+# Check if the user has changed the input text
+if user_input != st.session_state.previous_input:
+    # If input changes, reset the conversation history
+    st.session_state.conversation_history = []
+    st.session_state.previous_input = user_input
+    
 if user_input:
-        bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
-        st.session_state.conversation_history = updated_history
-        
-        # Display the conversation so far
-        for message in st.session_state.conversation_history:
-            if "User:" in message:
-                st.markdown(f"**User:** {message.replace('User: ', '')}")
-            elif "Chatbot:" in message:
-                st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
-        
+    bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
+    st.session_state.conversation_history = updated_history
+    
+    for message in st.session_state.conversation_history:
+        if "User:" in message:
+            st.markdown(f"**User:** {message.replace('User: ', '')}")
+        elif "Chatbot:" in message:
+            st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
