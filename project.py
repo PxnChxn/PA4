@@ -16,11 +16,18 @@ import spacy
 from textblob import TextBlob
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
+from googletrans import Translator
+import epitran
 
 nltk.download("stopwords")
 nltk.download("punkt")
 
 nlp = spacy.load("en_core_web_sm")
+
+translator = Translator()
+
+epitran_thai = epitran.Epitran('tha-Tai')
+epitran_english = epitran.Epitran('eng-Latn')
 
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
@@ -60,6 +67,62 @@ def translate_text_with_openai(text, target_language):
     translated_text = "\n".join(translated_lines)
     return translated_text
 
+def get_stopwords():
+   english_stopwords = set(stopwords.words('english'))
+   thai_stopwords = set(pythainlp.corpus.thai_stopwords())
+   stopwords_combined = english_stopwords.union(thai_stopwords)
+   stopwords_combined.add(' ')
+   stopwords_combined.add('\n')
+   
+   return stopwords_combined
+
+def tokenization(input_text):
+   if re.match(r"[ก-์๐-๙]+", input_text): 
+       tokens = pythainlp.tokenize.word_tokenize(input_text)
+   else:  
+       doc = nlp(input_text)
+       tokens = [token.text for token in doc]
+   tokens = [token for token in tokens if token.strip() and not re.match(r'[^\w\s]', token)]
+   return tokens
+
+def translate_words(input_text):
+    detected_language = detect(input_text)
+
+    if detected_language == 'th':
+        words = pythainlp.tokenize.word_tokenize(input_text) 
+        target_language = 'en' 
+    else:
+        words = tokenization(input_text) 
+        target_language = 'th' 
+    
+    stopwords_combined = get_stopwords()
+    filtered_words = [word for word in words if word not in stopwords_combined]
+
+    word_translation = []
+    
+    for word in filtered_words:
+        if target_language == 'en': 
+            translation = translator.translate(word, src='th', dest='en').text
+        else: 
+            translation = translator.translate(word, src='en', dest='th').text
+
+        if detected_language == 'th':
+            ipa = epitran_thai.transliterate(word)
+        else:
+            ipa = epitran_english.transliterate(word)
+
+        word_translation.append([word, ipa, translation])
+
+    word_translation_df = pd.DataFrame(word_translation, columns=["Word", "IPA", "Translation"])
+
+    excel_buffer = io.BytesIO()
+    with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+        word_translation_df.to_excel(writer, index=True, sheet_name="Word Translation")
+    
+    excel_buffer.seek(0)
+
+    return excel_buffer, word_translation_df
+
 def generate_summary(translated_text):
     detected_language = detect(translated_text)  
 
@@ -86,24 +149,6 @@ def generate_summary(translated_text):
         
     return summary
     
-def get_stopwords():
-   english_stopwords = set(stopwords.words('english'))
-   thai_stopwords = set(pythainlp.corpus.thai_stopwords())
-   stopwords_combined = english_stopwords.union(thai_stopwords)
-   stopwords_combined.add(' ')
-   stopwords_combined.add('\n')
-   
-   return stopwords_combined
-
-def tokenization(input_text):
-   if re.match(r"[ก-์๐-๙]+", input_text): 
-       tokens = pythainlp.tokenize.word_tokenize(input_text)
-   else:  
-       doc = nlp(input_text)
-       tokens = [token.text for token in doc]
-   tokens = [token for token in tokens if token.strip() and not re.match(r'[^\w\s]', token)]
-   return tokens
-
 def most_common(input_text):
     detected_language = detect(input_text)
 
@@ -272,7 +317,19 @@ if st.session_state.translated_text:
         <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
     </div>
     """, unsafe_allow_html=True)
-   
+    
+    st.subheader("Word Translation:")
+    excel_buffer, word_translation_df = translate_words(input_text)
+    st.dataframe(word_translation_df, use_container_width=True)
+    if excel_buffer:
+        st.download_button(
+            label="Download the table",
+            data=excel_buffer,
+            file_name="word_translation.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key="word_translation_download"
+        )
+
     st.subheader("Summary:")
     st.markdown(f"""
     <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
