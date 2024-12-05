@@ -104,9 +104,9 @@ def translate_words(input_text):
         else:
             translation = Translator(to_lang="th").translate(word)
         
-        word_translation.append([word, ipa, translation])
+        word_translation.append([word, translation])
 
-    word_translation_df = pd.DataFrame(word_translation, columns=["Word", "IPA", "Translation"], index=range(1, len(word_translation) + 1))
+    word_translation_df = pd.DataFrame(word_translation, columns=["Word", "Translation"], index=range(1, len(word_translation) + 1))
 
     excel_buffer = io.BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
