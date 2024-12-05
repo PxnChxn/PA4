@@ -249,7 +249,8 @@ with st.container():
    # Initialize variables
    translated_text = None
    summary = None
-   excel_buffer_1, excel_buffer_2 = None
+   excel_buffer_1 = None
+   excel_buffer_2 = None
 
    # Translate to English
    with col2:
