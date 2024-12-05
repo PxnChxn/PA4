@@ -73,7 +73,7 @@ def translate_text(input_text, target_language):
     words = extract_words(input_text)
     words_to_translate = [word.strip(string.punctuation).lower() for word in words if word.strip(string.punctuation).lower()]
 
-    translated_words_set = set()
+    words_to_translate = set(words_to_translate)
     
     def translate_word(input_word, target_language):
         response = openai.ChatCompletion.create(
@@ -96,7 +96,7 @@ def translate_text(input_text, target_language):
     
     translated_words = [
         [word, get_pos(word, "Thai" if re.match(r'[ก-์๐-๙]+', word) else "English"), translate_word(word, target_language)]
-        for word in words_to_translate if word not in translated_words_set and not translated_words_set.add(word)
+        for word in words_to_translate
     ]
     
     excel_buffer_1 = io.BytesIO()
