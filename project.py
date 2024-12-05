@@ -27,8 +27,8 @@ nlp = spacy.load("en_core_web_sm")
 
 translator = Translator()
 
-url_eng = 'https://github.com/PxnChxn/PA4/raw/main/.streamlit/eng-Latn.csv'
-url_thai = 'https://github.com/PxnChxn/PA4/raw/main/.streamlit/tha-Thai.csv'
+url_eng = '.streamlit/eng-Latn.csv'
+url_thai = '.streamlit/tha-Thai.csv'
 eng_file = 'eng-Latn.csv'
 thai_file = 'tha-Thai.csv'
 response_eng = requests.get(url_eng)
