@@ -16,17 +16,13 @@ from langdetect import detect
 import spacy
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
-import epitran
 import requests
 from translate import Translator
 
 nltk.download("stopwords")
 nltk.download("punkt")
 
-nlp = spacy.load("en_core_web_sm")
-
-epitran_eng = epitran.Epitran('eng-Latn')
-epitran_thai = epitran.Epitran('tha-Thai')
+nlp = spacy.load("en_core_web_sm"
 
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
@@ -103,25 +99,14 @@ def translate_words(input_text):
     word_translation = []
 
     for word in filtered_words:
-        try:
-            if target_language == 'en':
-                translation = Translator(to_lang="en").translate(word)
-            else:
-                translation = Translator(to_lang="th").translate(word)
-        except Exception as e:
-            translation = f"Error: {e}"
-
-        try:
-            if detected_language == 'th':
-                ipa = epitran_thai.transliterate(word)
-            else:
-                ipa = epitran_eng.transliterate(word)
-        except Exception as e:
-            ipa = f"Error: {e}"
-
+        if target_language == 'en':
+            translation = Translator(to_lang="en").translate(word)
+        else:
+            translation = Translator(to_lang="th").translate(word)
+        
         word_translation.append([word, ipa, translation])
 
-    word_translation_df = pd.DataFrame(word_translation, columns=["Word", "IPA", "Translation"], index=range(1, len(word_counts_sorted) + 1))
+    word_translation_df = pd.DataFrame(word_translation, columns=["Word", "IPA", "Translation"], index=range(1, len(word_translation) + 1))
 
     excel_buffer = io.BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
