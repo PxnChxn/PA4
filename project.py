@@ -10,6 +10,7 @@ from pythainlp.tokenize import word_tokenize as thai_tokenize
 import pandas as pd
 import openpyxl
 import io
+import os
 from io import BytesIO
 from langdetect import detect
 import spacy
@@ -18,6 +19,7 @@ from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 from googletrans import Translator
 import epitran
+import requests
 
 nltk.download("stopwords")
 nltk.download("punkt")
@@ -29,16 +31,24 @@ translator = Translator()
 url_eng = 'https://github.com/PxnChxn/PA4/blob/main/.streamlit/eng-Latn.csv?raw=true'
 url_thai = 'https://github.com/PxnChxn/PA4/blob/main/.streamlit/tha-Thai.csv?raw=true'
 
+eng_file = 'eng-Latn.csv'
+thai_file = 'tha-Thai.csv'
+
 response_eng = requests.get(url_eng)
-with open('eng-Latn.csv', 'wb') as f:
+with open(eng_file, 'wb') as f:
     f.write(response_eng.content)
 
+# ดาวน์โหลดไฟล์ CSV ของภาษาไทย
 response_thai = requests.get(url_thai)
-with open('tha-Thai.csv', 'wb') as f:
+with open(thai_file, 'wb') as f:
     f.write(response_thai.content)
 
-epitran_eng = epitran.Epitran('eng-Latn')
-epitran_thai = epitran.Epitran('tha-Thai')
+# ตรวจสอบพาธปัจจุบัน
+print(f"Current Directory: {os.getcwd()}")
+
+# สร้าง Epitran Object โดยใช้พาธไฟล์ที่ดาวน์โหลด
+epitran_eng = epitran.Epitran(os.path.join(os.getcwd(), eng_file))
+epitran_thai = epitran.Epitran(os.path.join(os.getcwd(), thai_file))
 
 # Function to call OpenAI API for translation
 def translate_text_with_openai(text, target_language):
@@ -118,9 +128,9 @@ def translate_words(input_text):
             translation = translator.translate(word, src='en', dest='th').text
 
         if detected_language == 'th':
-            ipa = epitran_thai.transliterate(word)
+            ipa = epitran_thai.transcribe(word)
         else:
-            ipa = epitran_english.transliterate(word)
+            ipa = epitran_eng.transcribe(word)
 
         word_translation.append([word, ipa, translation])
 
