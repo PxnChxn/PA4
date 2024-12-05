@@ -148,7 +148,7 @@ def chatbot_response(user_input, conversation_history, translated_text=None, sum
         messages=[
             {"role": "system", "content": 
                 "You are a helpful chatbot that specializes in discussing song lyrics. "
-                "Your task is to engage in conversations based on the lyrics that the user provides, "
+                "Your task is to engage in conversations based on the lyrics that the user provides, {input_text}"
                 "giving meaningful and relevant responses while focusing on the themes, emotions, and messages within the lyrics."},
             {"role": "user", "content": user_input}
         ],
