@@ -14,9 +14,8 @@ import os
 from io import BytesIO
 from langdetect import detect
 import spacy
-from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import BertTokenizer, BertForSequenceClassification, MarianMTModel, MarianTokenizer
 import torch
-from google_trans_new import google_translator
 import epitran
 import requests
 
@@ -24,8 +23,6 @@ nltk.download("stopwords")
 nltk.download("punkt")
 
 nlp = spacy.load("en_core_web_sm")
-
-translator = google_translator()
 
 epitran_eng = epitran.Epitran('eng-Latn')
 epitran_thai = epitran.Epitran('tha-Thai')
@@ -86,6 +83,15 @@ def tokenization(input_text):
    tokens = [token for token in tokens if token.strip() and not re.match(r'[^\w\s]', token)]
    return tokens
 
+def translate_with_marianmt(word, src_lang, tgt_lang):
+    model_name = f'Helsinki-NLP/opus-mt-{src_lang}-{tgt_lang}'
+    model = MarianMTModel.from_pretrained(model_name)
+    tokenizer = MarianTokenizer.from_pretrained(model_name)
+    translated = model.generate(**tokenizer(word, return_tensors="pt", padding=True))
+    translated_text = tokenizer.decode(translated[0], skip_special_tokens=True)
+    
+    return translated_text
+
 def translate_words(input_text):
     detected_language = detect(input_text)
 
@@ -102,11 +108,11 @@ def translate_words(input_text):
     word_translation = []
     
     for word in filtered_words:
-        if target_language == 'en': 
-            translation = translator.translate(word, lang_tgt='en')
-        else: 
-            translation = translator.translate(word, lang_tgt='th')
-
+        if target_language == 'en':
+            translation = translate_with_marianmt(word, 'th', 'en')
+        else:
+            translation = translate_with_marianmt(word, 'en', 'th')
+            
         if detected_language == 'th':
             ipa = epitran_thai.transcribe(word)
         else:
