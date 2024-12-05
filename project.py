@@ -26,8 +26,6 @@ nlp = spacy.load("en_core_web_sm")
 
 translator = Translator()
 
-epitran.download_data()
-
 epitran_thai = epitran.Epitran('tha-Tai')
 epitran_english = epitran.Epitran('eng-Latn')
 
