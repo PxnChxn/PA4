@@ -182,6 +182,7 @@ def most_common(input_text):
     with pd.ExcelWriter(excel_buffer_2, engine='openpyxl') as writer:
         word_all_counts_df.to_excel(writer, index=True, sheet_name="Word Frequency")
 
+
     excel_buffer_2.seek(0)
 
     return excel_buffer_2, word_counts_df, filtered_words
