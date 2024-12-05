@@ -16,7 +16,7 @@ from langdetect import detect
 import spacy
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
-from googletrans import Translator
+from google_trans_new import google_translator
 import epitran
 import requests
 
@@ -25,7 +25,7 @@ nltk.download("punkt")
 
 nlp = spacy.load("en_core_web_sm")
 
-translator = Translator()
+translator = google_translator()
 
 epitran_eng = epitran.Epitran('eng-Latn')
 epitran_thai = epitran.Epitran('tha-Thai')
@@ -103,9 +103,9 @@ def translate_words(input_text):
     
     for word in filtered_words:
         if target_language == 'en': 
-            translation = translator.translate(word, src='th', dest='en').text
+            translation = translator.translate(word, lang_tgt='en')
         else: 
-            translation = translator.translate(word, src='en', dest='th').text
+            translation = translator.translate(word, lang_tgt='th')
 
         if detected_language == 'th':
             ipa = epitran_thai.transcribe(word)
@@ -250,6 +250,7 @@ with st.container():
            if input_text and 'api_key' in st.session_state:
                # Translate the text
                translated_text = translate_text_with_openai(input_text, target_language)
+               word_translation_df = translate_words(input_text)
                
                # Generate analyses
                summary = generate_summary(translated_text)
@@ -257,6 +258,7 @@ with st.container():
                
                # Store results in session state
                st.session_state.translated_text = translated_text
+               st.session_state.word_translation = word_translation_df  
                st.session_state.summary = summary
                st.session_state.most_common = most_common_result
                
@@ -267,6 +269,7 @@ with st.container():
            if input_text and 'api_key' in st.session_state:
                # Translate the text
                translated_text = translate_text_with_openai(input_text, target_language)
+               word_translation_df = translate_words(input_text)
                
                # Generate analyses
                summary = generate_summary(translated_text)
@@ -274,6 +277,7 @@ with st.container():
                
                # Store results in session state
                st.session_state.translated_text = translated_text
+               st.session_state.word_translation = word_translation_df  
                st.session_state.summary = summary
                st.session_state.most_common = most_common_result
                
