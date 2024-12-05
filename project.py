@@ -97,14 +97,15 @@ def translate_text(input_text, target_language):
             doc = nlp(word)
             return doc[0].pos_ 
     
-    translations = {}
-    pos_tags = {}
+    translated_words = []
+
     for word in words_to_translate:
         translated_word = translate_word(word, target_language)
         translations[word] = translated_word
-
         language = "Thai" if re.match(r'[ก-์๐-๙]+', word) else "English"
         pos_tags[word] = get_pos(word, language)
+
+        translated_words.append([word, pos_tags[word], translated_word])
     
     excel_buffer_1 = io.BytesIO()
     translation_df = pd.DataFrame(translated_words, columns=["Word", "Part of Speech", "Translation"], index=range(1, len(translated_words) + 1))
