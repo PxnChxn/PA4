@@ -137,9 +137,10 @@ def chatbot_response(user_input, conversation_history, translated_text=None, sum
     conversation_history.append(f"User: {user_input}")
     
     system_content = (
-        "You are a helpful chatbot that specializes in discussing song lyrics. "
+        "You are a helpful chatbot that specializes in discussing song lyrics."
         "Your task is to engage in conversations based on the lyrics that the user provides, "
         "giving meaningful and relevant responses while focusing on the themes, emotions, and messages within the lyrics."
+        "You have to follow all user's commands."
     )
     
     if input_text:
@@ -239,9 +240,6 @@ if 'previous_input' not in st.session_state:
 if 'translated_text' not in st.session_state:
     st.session_state.translated_text = None
 
-if 'summary' not in st.session_state:
-    st.session_state.summary = None
-
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
 
@@ -249,7 +247,6 @@ if 'conversation_history' not in st.session_state:
 if input_text != st.session_state.previous_input:
     # Reset the relevant session state variables
     st.session_state.translated_text = None
-    st.session_state.summary = None
     st.session_state.conversation_history = []
     st.session_state.previous_input = input_text
 
