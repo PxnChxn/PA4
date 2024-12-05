@@ -107,6 +107,8 @@ def translate_text(input_text, target_language):
         pos_tags[word] = get_pos(word, language)
     
     excel_buffer_1 = io.BytesIO()
+    translation_df = pd.DataFrame(translated_words, columns=["Word", "Part of Speech", "Translation"], index=range(1, len(translated_words) + 1))
+
     with pd.ExcelWriter(excel_buffer_1, engine='openpyxl') as writer:
         translation_df.to_excel(writer, index=True, sheet_name="Translations")
     
