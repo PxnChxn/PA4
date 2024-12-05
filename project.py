@@ -241,14 +241,23 @@ if 'previous_input' not in st.session_state:
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
 
+if 'translated_text' not in st.session_state:
+    st.session_state.translated_text = None
+
+if 'summary' not in st.session_state:
+    st.session_state.summary = None
+
 # Check if input_text has changed
 if input_text != st.session_state.previous_input:
+    # Reset the conversation history only if input_text changes
     st.session_state.conversation_history = []
     st.session_state.previous_input = input_text
-
-if input_text and not st.session_state.translated_text:
-    st.session_state.translated_text = translate_text_with_openai(input_text, target_language="English")
-    st.session_state.summary = generate_summary(st.session_state.translated_text)
+    
+    # Only translate and generate summary if there is no previous summary
+    if input_text and not st.session_state.translated_text:
+        st.session_state.translated_text = translate_text_with_openai(input_text, target_language="English")
+        if st.session_state.translated_text:
+            st.session_state.summary = generate_summary(st.session_state.translated_text)
 
 # Display results only if translation has been done
 if st.session_state.translated_text:
@@ -262,11 +271,14 @@ if st.session_state.translated_text:
     """, unsafe_allow_html=True)
    
     st.subheader("Summary:")
-    st.markdown(f"""
-    <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-      <p style='font-size: 16px; color: #444;'>{summary}</p>
-    </div>
-    """, unsafe_allow_html=True)
+    if st.session_state.summary:
+        st.markdown(f"""
+        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+          <p style='font-size: 16px; color: #444;'>{st.session_state.summary}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.write("Summary not generated yet.")
 
     # Display the top 10 words table
     st.subheader("Top 10 Words:")
@@ -283,24 +295,23 @@ if st.session_state.translated_text:
             key="word_frequency_download"
         )
 
-    # Chat interface
-    st.title("Song Lyric Chatbot")
-    st.write("Chatbot will discuss the lyrics with you. Keep the conversation going until you're satisfied.")
+# Chat interface
+st.title("Song Lyric Chatbot")
+st.write("Chatbot will discuss the lyrics with you. Keep the conversation going until you're satisfied.")
+
+user_input = st.text_area("Ask about the song:")
+submit_button = st.button("Submit")
+
+if submit_button and user_input:
+    bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
     
-    user_input = st.text_area("Ask about the song:")
+    st.session_state.conversation_history = updated_history
     
-    submit_button = st.button("Submit")
-    
-    if submit_button and user_input:
-        bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
-        
-        st.session_state.conversation_history = updated_history
-        
-        for message in st.session_state.conversation_history:
-            if "User:" in message:
-                st.markdown(f"**User:** {message.replace('User: ', '')}")
-            elif "Chatbot:" in message:
-                st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
+    for message in st.session_state.conversation_history:
+        if "User:" in message:
+            st.markdown(f"**User:** {message.replace('User: ', '')}")
+        elif "Chatbot:" in message:
+            st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
 
             elif "Chatbot:" in message:
                 st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
