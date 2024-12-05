@@ -230,30 +230,30 @@ elif not input_text:
 
 # Display results only if translation has been done
 if translated_text:
-   translated_text_with_br = translated_text.replace("\n", "<br>")
+    translated_text_with_br = translated_text.replace("\n", "<br>")
     
-   st.subheader("Translated Text:")
-   st.markdown(f"""
-   <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+    st.subheader("Translated Text:")
+    st.markdown(f"""
+    <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
         <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
-   </div>
-   """, unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
    
-   # Display summary
-   st.subheader("Summary:")
-   st.markdown(f"""
-   <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+    # Display summary
+    st.subheader("Summary:")
+    st.markdown(f"""
+    <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
       <p style='font-size: 16px; color: #444;'>{summary}</p>
-   </div>
-   """, unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
 
-   # Display the top 10 words table
-   st.subheader("Top 10 words:")
-   excel_buffer, word_counts_df, _ = most_common(input_text)
-   st.dataframe(word_counts_df, use_container_width=True)
+    # Display the top 10 words table
+    st.subheader("Top 10 words:")
+    excel_buffer, word_counts_df, _ = most_common(input_text)
+    st.dataframe(word_counts_df, use_container_width=True)
    
    # Download button for word frequency Excel file
-   if excel_buffer:
+    if excel_buffer:
         st.markdown("""
         <style>
             .button-container {{
@@ -276,41 +276,41 @@ if translated_text:
         st.markdown("</div>", unsafe_allow_html=True)
 
    # Additional button container styling
-   st.markdown("""
-    <style>
+    st.markdown("""
+     <style>
         .button-container {
             display: flex;
             justify-content: center;
             margin-top: 20px;
         }
-    </style>
-    """, unsafe_allow_html=True)
+     </style>
+     """, unsafe_allow_html=True)
 
-# Chat interface
-st.title("Song Lyric Chatbot")
-st.write("Chatbot will discuss the lyrics with you. Keep the conversation going until you're satisfied.")
-
-if 'conversation_history' not in st.session_state:
-    st.session_state.conversation_history = []
-
-if 'previous_input' not in st.session_state:
-    st.session_state.previous_input = ""
-
-user_input = st.text_area("Ask about the song:")
-
-if user_input != st.session_state.previous_input:
-    st.session_state.conversation_history = []
-    st.session_state.previous_input = user_input
-
-submit_button = st.button("Submit")
-
-if submit_button and user_input:
-    bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
+    # Chat interface
+    st.title("Song Lyric Chatbot")
+    st.write("Chatbot will discuss the lyrics with you. Keep the conversation going until you're satisfied.")
     
-    st.session_state.conversation_history = updated_history
+    if 'conversation_history' not in st.session_state:
+        st.session_state.conversation_history = []
     
-    for message in st.session_state.conversation_history:
-        if "User:" in message:
-            st.markdown(f"**User:** {message.replace('User: ', '')}")
-        elif "Chatbot:" in message:
-            st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
+    if 'previous_input' not in st.session_state:
+        st.session_state.previous_input = ""
+    
+    user_input = st.text_area("Ask about the song:")
+    
+    if user_input != st.session_state.previous_input:
+        st.session_state.conversation_history = []
+        st.session_state.previous_input = user_input
+    
+    submit_button = st.button("Submit")
+    
+    if submit_button and user_input:
+        bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
+        
+        st.session_state.conversation_history = updated_history
+        
+        for message in st.session_state.conversation_history:
+            if "User:" in message:
+                st.markdown(f"**User:** {message.replace('User: ', '')}")
+            elif "Chatbot:" in message:
+                st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
