@@ -266,7 +266,7 @@ if st.session_state.translated_text:
     st.subheader("Summary:")
     st.markdown(f"""
     <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-      <p style='font-size: 16px; color: #444;'>{summary}</p>
+      <p style='font-size: 16px; color: #444;'>+ summary +</p>
     </div>
     """, unsafe_allow_html=True)
 
