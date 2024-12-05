@@ -107,12 +107,12 @@ def translate_text(input_text, target_language):
         pos_tags[word] = get_pos(word, language)
     
     excel_buffer_1 = io.BytesIO()
-    with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+    with pd.ExcelWriter(excel_buffer_1, engine='openpyxl') as writer:
         translation_df.to_excel(writer, index=True, sheet_name="Translations")
     
     excel_buffer_1.seek(0)
 
-    return excel_buffer, translation_df
+    return excel_buffer_1, translation_df
 
 
 def get_stopwords():
@@ -179,10 +179,10 @@ def most_common(input_text):
     word_all_counts_sorted = word_counts.most_common()
     word_all_counts_df = pd.DataFrame(word_all_counts_sorted, columns=["Word", "Frequency"], index=range(1, len(word_all_counts_sorted) + 1))
 
-    with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+    with pd.ExcelWriter(excel_buffer_2, engine='openpyxl') as writer:
         word_all_counts_df.to_excel(writer, index=True, sheet_name="Word Frequency")
 
-    excel_buffer.seek(0)
+    excel_buffer_2.seek(0)
 
     return excel_buffer_2, word_counts_df, filtered_words
 
@@ -249,8 +249,7 @@ with st.container():
    # Initialize variables
    translated_text = None
    summary = None
-   word_cloud_image = None
-   excel_buffer = None
+   excel_buffer_1, excel_buffer_2 = None
 
    # Translate to English
    with col2:
@@ -338,7 +337,7 @@ if st.session_state.translated_text:
     if excel_buffer_1:
         st.download_button(
             label="Download table",
-            data=excel_buffer,
+            data=excel_buffer_1,
             file_name="word_translation.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             key="word_translation_download"
@@ -360,7 +359,7 @@ if st.session_state.translated_text:
     if excel_buffer_2:
         st.download_button(
             label="See all word frequency",
-            data=excel_buffer,
+            data=excel_buffer_2,
             file_name="word_frequency.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             key="word_frequency_download"
