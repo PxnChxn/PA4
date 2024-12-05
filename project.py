@@ -238,12 +238,6 @@ elif not input_text:
 if 'previous_input' not in st.session_state:
     st.session_state.previous_input = ""
 
-if 'translated_text' not in st.session_state:
-    st.session_state.translated_text = None
-
-if 'summary' not in st.session_state:
-    st.session_state.summary = None
-
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = []
 
