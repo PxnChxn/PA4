@@ -9,7 +9,7 @@ openpyxl
 wordcloud
 matplotlib
 langdetect
-googletrans
+google_trans_new
 epitran
 requests
 transformers
