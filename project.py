@@ -60,15 +60,15 @@ def translate_text_with_openai(text, target_language):
     translated_text = "\n".join(translated_lines)
     return translated_text
 
-def generate_summary(translate_result):
-    detected_language = detect(translate_result)  
+def generate_summary(translated_text):
+    detected_language = detect(translated_text)  
 
     if detected_language != 'th':
         response = openai.ChatCompletion.create(
             model="gpt-4o-mini-2024-07-18",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": f"Summarize this text: {translate_result}. Make it still contain the important key message from the lyric."}
+                {"role": "user", "content": f"Summarize this text: {translated_text}. Make it still contain the important key message from the lyric."}
             ],
             max_tokens=300
         )
@@ -78,7 +78,7 @@ def generate_summary(translate_result):
             model="gpt-4o-mini-2024-07-18",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": f"สรุปเนื้อหาของข้อความนี้: {translate_result}. ทำให้ยังคงความหมายสำคัญจากเนื้อเพลง."}
+                {"role": "user", "content": f"สรุปเนื้อหาของข้อความนี้: {translated_text}. ทำให้ยังคงความหมายสำคัญจากเนื้อเพลง."}
             ],
             max_tokens=300
         )
