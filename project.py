@@ -75,7 +75,7 @@ def translate_text(input_text, target_language):
 
     words_to_trans_to_set = set(words_to_trans)
 
-    words_to_translate = [words_to_trans_to_set]
+    words_to_translate = list(words_to_trans_to_set)
     
     def translate_word(input_word, target_language):
         response = openai.ChatCompletion.create(
