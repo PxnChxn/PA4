@@ -106,11 +106,11 @@ def translate_text(input_text, target_language):
         language = "Thai" if re.match(r'[ก-์๐-๙]+', word) else "English"
         pos_tags[word] = get_pos(word, language)
     
-    excel_buffer = io.BytesIO()
+    excel_buffer_1 = io.BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
         translation_df.to_excel(writer, index=True, sheet_name="Translations")
     
-    excel_buffer.seek(0)
+    excel_buffer_1.seek(0)
 
     return excel_buffer, translation_df
 
@@ -175,7 +175,7 @@ def most_common(input_text):
 
     word_counts_df = pd.DataFrame(word_counts_sorted, columns=["Word", "Frequency"], index=range(1, len(word_counts_sorted) + 1))
 
-    excel_buffer = io.BytesIO()
+    excel_buffer_2 = io.BytesIO()
     word_all_counts_sorted = word_counts.most_common()
     word_all_counts_df = pd.DataFrame(word_all_counts_sorted, columns=["Word", "Frequency"], index=range(1, len(word_all_counts_sorted) + 1))
 
@@ -184,7 +184,7 @@ def most_common(input_text):
 
     excel_buffer.seek(0)
 
-    return excel_buffer, word_counts_df, filtered_words
+    return excel_buffer_2, word_counts_df, filtered_words
 
 def chatbot_response(user_input, conversation_history, translated_text=None, summary=None):
     openai.api_key = st.session_state.api_key
@@ -333,15 +333,16 @@ if st.session_state.translated_text:
     """, unsafe_allow_html=True)
 
     st.subheader("Word with Translation")
-    excel_buffer, translation_df = translate_text(input_text, target_language)
+    excel_buffer_1, translation_df = translate_text(input_text, target_language)
     st.dataframe(translation_df, use_container_width=True)
-    st.download_button(
-        label="Download the table",
-        data=excel_buffer,
-        file_name="translations.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        key="word_translation_table_download"
-    )
+    if excel_buffer_1:
+        st.download_button(
+            label="Download table",
+            data=excel_buffer,
+            file_name="word_translation.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key="word_translation_download"
+        )
     
     st.subheader("Summary:")
     st.markdown(f"""
@@ -352,11 +353,11 @@ if st.session_state.translated_text:
 
     # Display the top 10 words table
     st.subheader("Top 10 Words:")
-    excel_buffer, word_counts_df, _ = most_common(input_text)
+    excel_buffer_2, word_counts_df, _ = most_common(input_text)
     st.dataframe(word_counts_df, use_container_width=True)
    
     # Download button for word frequency Excel file
-    if excel_buffer:
+    if excel_buffer_2:
         st.download_button(
             label="See all word frequency",
             data=excel_buffer,
