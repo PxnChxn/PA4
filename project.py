@@ -121,7 +121,7 @@ def translate_words(input_text):
 
         word_translation.append([word, ipa, translation])
 
-    word_translation_df = pd.DataFrame(word_translation, columns=["Word", "IPA", "Translation"])
+    word_translation_df = pd.DataFrame(word_translation, columns=["Word", "IPA", "Translation"] index=range(1, len(word_counts_sorted) + 1))
 
     excel_buffer = io.BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
