@@ -136,22 +136,25 @@ def chatbot_response(user_input, conversation_history, translated_text=None, sum
     
     conversation_history.append(f"User: {user_input}")
     
+    system_content = (
+        "You are a helpful chatbot that specializes in discussing song lyrics. "
+        "Your task is to engage in conversations based on the lyrics that the user provides, "
+        "giving meaningful and relevant responses while focusing on the themes, emotions, and messages within the lyrics."
+    )
+    
     if input_text:
-        conversation_history.append(f"Lyrics: {input_text}")
+        system_content += f"\nLyrics: {input_text}"
     if translated_text:
-        conversation_history.append(f"Translated Text: {translated_text}")
+        system_content += f"\nTranslated Text: {translated_text}"
     if summary:
-        conversation_history.append(f"Summary: {summary}")
-
+        system_content += f"\nSummary: {summary}"
+    
     prompt = "\n".join(conversation_history) + "\nChatbot (about song lyrics):"
     
     response = openai.ChatCompletion.create(
         model="gpt-4o-mini-2024-07-18", 
         messages=[
-            {"role": "system", "content": 
-                "You are a helpful chatbot that specializes in discussing song lyrics. "
-                "Your task is to engage in conversations based on the lyrics that the user provides, {input_text}"
-                "giving meaningful and relevant responses while focusing on the themes, emotions, and messages within the lyrics."},
+            {"role": "system", "content": system_content},  
             {"role": "user", "content": user_input}
         ],
         max_tokens=350,
