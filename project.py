@@ -106,9 +106,9 @@ def translate_words(input_text):
             translation = Translator(to_lang="th").translate(word)
             
         if detected_language == 'th':
-            ipa = epitran_thai.transcribe(word)
+            ipa = epitran_thai.transcription(word)
         else:
-            ipa = epitran_eng.transcribe(word)
+            ipa = epitran_eng.transcription(word)
 
         word_translation.append([word, ipa, translation])
 
