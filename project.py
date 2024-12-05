@@ -234,52 +234,57 @@ if 'api_key' not in st.session_state:
 elif not input_text:
    st.warning("Please enter some text for translation.")
     
-# Store the current input in session_state to detect changes
-if translated_text:
-    translated_text_with_br = translated_text.replace("\n", "<br>")
+if input_text != st.session_state.previous_input:
+    st.session_state.previous_input = input_text
+    st.session_state.translated_text = translate_text_with_openai(input_text)
+    st.session_state.summary = generate_summary(st.session_state.translated_text)
+
+if st.session_state.translated_text:
+    translated_text_with_br = st.session_state.translated_text.replace("\n", "<br>")
     
     st.subheader("Translated Text:")
     st.markdown(f"""
     <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
         <p style='font-size: 16px; color: #333;'>{translated_text_with_br}</p>
     </div>
-    """, unsafe_allow_html=True)   
-   
-    st.subheader("Summary:")
-    st.markdown("""
-    <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
-      <p style='font-size: 16px; color: #444;'>""" + summary + "</p></div>", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    # Display the top 10 words table
-    st.subheader("Top 10 Words:")
-    excel_buffer, word_counts_df, _ = most_common(input_text)
-    st.dataframe(word_counts_df, use_container_width=True)
-   
-    # Download button for word frequency Excel file
-    if excel_buffer:
-        st.download_button(
-            label="See all word frequency",
-            data=excel_buffer,
-            file_name="word_frequency.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            key="word_frequency_download"
-        )
+    if st.session_state.summary:
+        st.subheader("Summary:")
+        st.markdown(f"""
+        <div style="border: 2px solid #4CAF50; padding: 10px; border-radius: 8px; background-color: #fafafa;">
+            <p style='font-size: 16px; color: #444;'>{st.session_state.summary}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.subheader("Summary:")
+        st.markdown("Summary not available yet.")
 
-    # Chat interface
-    st.title("Song Lyric Chatbot")
-    st.write("Chatbot will discuss the lyrics with you. Keep the conversation going until you're satisfied.")
+st.subheader("Top 10 Words:")
+excel_buffer, word_counts_df, _ = most_common(input_text)
+st.dataframe(word_counts_df, use_container_width=True)
+
+if excel_buffer:
+    st.download_button(
+        label="See all word frequency",
+        data=excel_buffer,
+        file_name="word_frequency.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        key="word_frequency_download"
+    )
+
+st.title("Song Lyric Chatbot")
+st.write("Chatbot will discuss the lyrics with you. Keep the conversation going until you're satisfied.")
+
+user_input = st.text_area("Ask about the song:")
+submit_button = st.button("Submit")
+
+if submit_button and user_input:
+    bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
+    st.session_state.conversation_history = updated_history
     
-    user_input = st.text_area("Ask about the song:")
-    
-    submit_button = st.button("Submit")
-    
-    if submit_button and user_input:
-        bot_response, updated_history = chatbot_response(user_input, st.session_state.conversation_history)
-        
-        st.session_state.conversation_history = updated_history
-        
-        for message in st.session_state.conversation_history:
-            if "User:" in message:
-                st.markdown(f"**User:** {message.replace('User: ', '')}")
-            elif "Chatbot:" in message:
-                st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
+    for message in st.session_state.conversation_history:
+        if "User:" in message:
+            st.markdown(f"**User:** {message.replace('User: ', '')}")
+        elif "Chatbot:" in message:
+            st.markdown(f"**Chatbot:** {message.replace('Chatbot: ', '')}")
