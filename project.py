@@ -34,7 +34,7 @@ def translate_text_with_openai(text, target_language):
     for line in lines:
         if line.strip(): 
             response = openai.ChatCompletion.create(
-                model="gpt-4o-mini-2024-07-18",
+                model="gpt-4",
                 messages=[
                     {
                         "role": "system",
@@ -79,9 +79,9 @@ def translate_text(input_text, target_language):
     
     def translate_word(input_word, target_language):
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini-2024-07-18", 
+            model="gpt-4", 
             messages=[
-                {"role": "system", "content": f"You are a translator that translates a word into {target_language}."},
+                {"role": "system", "content": f"You are a translator that translates a word into {target_language}. You have to concern about the meaning of each word to make the translation most relate with the song content."},
                 {"role": "user", "content": input_word}
             ],
             max_tokens=100
@@ -134,7 +134,7 @@ def generate_summary(translated_text):
 
     if detected_language != 'th':
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini-2024-07-18",
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": f"Summarize this text: {translated_text}. Make it still contain the important key message from the lyric."}
