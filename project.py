@@ -144,7 +144,7 @@ def generate_summary(translated_text):
         summary = response['choices'][0]['message']['content'].strip()
     else:
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini-2024-07-18",
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": f"สรุปเนื้อหาของข้อความนี้: {translated_text}. ทำให้ยังคงความหมายสำคัญจากเนื้อเพลง."}
@@ -205,7 +205,7 @@ def chatbot_response(user_input, conversation_history, translated_text=None, sum
     prompt = "\n".join(conversation_history) + "\nChatbot (about song lyrics):"
     
     response = openai.ChatCompletion.create(
-        model="gpt-4o-mini-2024-07-18", 
+        model="gpt-4", 
         messages=[
             {"role": "system", "content": system_content},  
             {"role": "user", "content": user_input}
